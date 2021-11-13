@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gojwtissuer-instance
+  labels:
+    app: gojwtissuer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gojwtissuer
+  template:
+    metadata:
+      labels:
+        app: gojwtissuer
+    spec:
+      containers:
+        - name: gojwtissuer-instance
+          image: oleksvelychko/gojwtissuer
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SECRET_KEY
+              value: "secretkey"
+            - name: PORT
+              value: "8080"
