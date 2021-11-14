@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -26,7 +27,23 @@ func TestAllowToEndpointMiddleware(t *testing.T) {
 	handler.ServeHTTP(res, req)
 
 	if string(res.Body.Bytes()) == "environment variable `SECRET_KEY` is not defined" {
-		t.Errorf("failed to get access to resource using token")
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if string(res.Body.Bytes()) == "failed to get token from header request" {
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if strings.HasPrefix(string(res.Body.Bytes()), "unexpected signing method") {
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if string(res.Body.Bytes()) == "failed to verify `aud` claim" {
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if string(res.Body.Bytes()) == "failed to verify `iss` claim" {
+		t.Errorf(string(res.Body.Bytes()))
 	}
 }
 
@@ -45,6 +62,22 @@ func TestJwtAuthenticationMiddleware(t *testing.T) {
 	handler.ServeHTTP(res, req)
 
 	if string(res.Body.Bytes()) == "environment variable `SECRET_KEY` is not defined" {
-		t.Errorf("failed to get access to resource using token")
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if string(res.Body.Bytes()) == "failed to get token from header request" {
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if strings.HasPrefix(string(res.Body.Bytes()), "unexpected signing method") {
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if string(res.Body.Bytes()) == "failed to verify `aud` claim" {
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if string(res.Body.Bytes()) == "failed to verify `iss` claim" {
+		t.Errorf(string(res.Body.Bytes()))
 	}
 }
