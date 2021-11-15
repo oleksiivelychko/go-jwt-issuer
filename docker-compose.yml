@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+
+  redis-jwt:
+    container_name: redis_jwt
+    restart: unless-stopped
+    image: redis
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    networks:
+      - go-network
+
+networks:
+  go-network:
+    driver: bridge
