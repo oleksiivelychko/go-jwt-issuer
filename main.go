@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-redis/redis/v8"
+	"github.com/joho/godotenv"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"log"
 	"net/http"
+	"os"
 )
 
 func jwtIssuer(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +28,21 @@ func jwtIssuer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func initRedis() *redis.Client {
+	addr := fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT"))
+	return redis.NewClient(&redis.Options{
+		Addr: addr,
+	})
+}
+
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	_ = initRedis()
+
 	http.HandleFunc("/", jwtIssuer)
 	http.HandleFunc("/issue", jwtIssuer)
 	log.Fatal(http.ListenAndServe(env.GetPort(), nil))
