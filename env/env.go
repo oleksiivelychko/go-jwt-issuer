@@ -2,6 +2,7 @@ package env
 
 import (
 	"os"
+	"strconv"
 )
 
 const defaultBindPort = ":8080"
@@ -21,6 +22,17 @@ func GetAUD() string {
 
 func GetISS() string {
 	return os.Getenv("ISSUER_ISS")
+}
+
+func GetEXP() int {
+	expirationTimeExp := os.Getenv("EXPIRATION_TIME_EXP")
+	if expirationTimeExp != "" {
+		exp, err := strconv.ParseInt(expirationTimeExp, 10, 32)
+		if err == nil {
+			return int(exp)
+		}
+	}
+	return 60
 }
 
 func GetPort() string {
