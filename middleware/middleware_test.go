@@ -12,7 +12,7 @@ import (
 
 func TestAllowToEndpointMiddleware(t *testing.T) {
 	_ = os.Setenv("SECRET_KEY", "secretkey")
-	token, _ := issuer.IssueJWT(env.GetSecretKey(), "", "")
+	token, _, _, _ := issuer.IssueJWT(env.GetSecretKey(), 0, 60, "", "")
 
 	closure := func(writer http.ResponseWriter, request *http.Request) {}
 
@@ -45,11 +45,15 @@ func TestAllowToEndpointMiddleware(t *testing.T) {
 	if string(res.Body.Bytes()) == "failed to verify `iss` claim" {
 		t.Errorf(string(res.Body.Bytes()))
 	}
+
+	if string(res.Body.Bytes()) == "failed to verify `exp` claim" {
+		t.Errorf(string(res.Body.Bytes()))
+	}
 }
 
 func TestJwtAuthenticationMiddleware(t *testing.T) {
 	_ = os.Setenv("SECRET_KEY", "secretkey")
-	token, _ := issuer.IssueJWT(env.GetSecretKey(), "", "")
+	token, _, _, _ := issuer.IssueJWT(env.GetSecretKey(), 0, 60, "", "")
 
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
@@ -78,6 +82,10 @@ func TestJwtAuthenticationMiddleware(t *testing.T) {
 	}
 
 	if string(res.Body.Bytes()) == "failed to verify `iss` claim" {
+		t.Errorf(string(res.Body.Bytes()))
+	}
+
+	if string(res.Body.Bytes()) == "failed to verify `exp` claim" {
 		t.Errorf(string(res.Body.Bytes()))
 	}
 }

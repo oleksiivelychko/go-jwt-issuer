@@ -27,6 +27,7 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 	secretKey := env.GetSecretKey()
 	aud := env.GetAUD()
 	iss := env.GetISS()
+	exp := env.GetEXP()
 	tokenHeader := r.Header.Get("Authorization")
 
 	if len(secretKey) == 0 {
@@ -51,6 +52,13 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 				verifiedIssuer := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
 				if !verifiedIssuer {
 					return nil, fmt.Errorf("failed to verify `iss` claim")
+				}
+			}
+
+			if exp > 0 {
+				verifiedExpires := token.Claims.(jwt.MapClaims).VerifyExpiresAt(exp, false)
+				if !verifiedExpires {
+					return nil, fmt.Errorf("failed to verify `exp` claim")
 				}
 			}
 
