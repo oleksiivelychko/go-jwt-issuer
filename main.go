@@ -16,8 +16,9 @@ func jwtIssuer(w http.ResponseWriter, r *http.Request) {
 	if len(secretKey) > 0 {
 		var aud = env.GetAUD()
 		var iss = env.GetISS()
+		var expiresMinutes = env.GetExpiresMinutes()
 
-		validToken, err := issuer.IssueJWT(secretKey, aud, iss)
+		validToken, _, _, err := issuer.IssueJWT(secretKey, 0, expiresMinutes, aud, iss)
 		if err != nil {
 			_, _ = fmt.Fprintf(w, "failed to get the complete signed token: %s", err.Error())
 		}

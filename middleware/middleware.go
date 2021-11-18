@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"net/http"
+	"time"
 )
 
 func AllowToEndpoint(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
@@ -27,7 +28,8 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 	secretKey := env.GetSecretKey()
 	aud := env.GetAUD()
 	iss := env.GetISS()
-	exp := env.GetEXP()
+	expiresMinutes := env.GetExpiresMinutes()
+
 	tokenHeader := r.Header.Get("Authorization")
 
 	if len(secretKey) == 0 {
@@ -55,7 +57,8 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 				}
 			}
 
-			if exp > 0 {
+			if expiresMinutes > 0 {
+				exp := time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
 				verifiedExpires := token.Claims.(jwt.MapClaims).VerifyExpiresAt(exp, false)
 				if !verifiedExpires {
 					return nil, fmt.Errorf("failed to verify `exp` claim")

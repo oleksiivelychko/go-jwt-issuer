@@ -24,12 +24,12 @@ func GetISS() string {
 	return os.Getenv("ISSUER_ISS")
 }
 
-func GetEXP() int64 {
-	expirationTimeExp := os.Getenv("EXPIRATION_TIME_EXP")
+func GetExpiresMinutes() uint8 {
+	expirationTimeExp := os.Getenv("EXPIRES_MINUTES")
 	if expirationTimeExp != "" {
-		exp, err := strconv.ParseInt(expirationTimeExp, 10, 64)
+		minutes, err := strconv.ParseUint(expirationTimeExp, 10, 32)
 		if err == nil {
-			return exp
+			return uint8(minutes)
 		}
 	}
 	return 60

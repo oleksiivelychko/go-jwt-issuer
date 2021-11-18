@@ -12,13 +12,13 @@ type JwtClaims struct {
 	jwt.StandardClaims
 }
 
-func IssueJWT(secretKey []byte, userID uint, expireMinutes int, aud, iss string) (
+func IssueJWT(secretKey []byte, userID uint, expiresMinutes uint8, aud, iss string) (
 	token string,
 	uid string,
 	exp int64,
 	err error,
 ) {
-	exp = time.Now().Add(time.Minute * time.Duration(expireMinutes)).Unix()
+	exp = time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
 	uid = uuid.New().String()
 
 	claims := &JwtClaims{
