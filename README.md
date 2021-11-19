@@ -1,6 +1,6 @@
 # go-jwt-issuer
 
-### Issuer as (micro)service generates JSON web tokens.
+### Microservice generates JSON web tokens signed by user identifier.
 
 💡 Deployed on <a href="https://oleksiivelychkogojwtissuer.herokuapp.com">Heroku</a>
 
