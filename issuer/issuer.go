@@ -3,6 +3,7 @@ package issuer
 import (
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
+	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"time"
 )
 
@@ -12,12 +13,17 @@ type JwtClaims struct {
 	jwt.StandardClaims
 }
 
-func IssueJWT(secretKey []byte, userID uint, expiresMinutes uint8, aud, iss string) (
+func IssueUserJWT(userID uint) (
 	token string,
 	uid string,
 	exp int64,
 	err error,
 ) {
+	var secretKey = env.GetSecretKey()
+	var aud = env.GetAUD()
+	var iss = env.GetISS()
+	var expiresMinutes = env.GetExpiresMinutes()
+
 	exp = time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
 	uid = uuid.New().String()
 
