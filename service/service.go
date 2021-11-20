@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
@@ -45,13 +46,33 @@ func (tokenService *TokenService) GenerateTokenPair(userID uint) (
 		return
 	}
 
-	cacheJSON, err := json.Marshal(CachedTokens{
+	cachedJSON, err := json.Marshal(CachedTokens{
 		AccessUID:  accessUID,
 		RefreshUID: refreshUID,
 	})
 
 	var ctx = context.Background()
-	tokenService.Redis.Set(ctx, fmt.Sprintf("token-%d", userID), string(cacheJSON), 0)
+	tokenService.Redis.Set(ctx, fmt.Sprintf("token-%d", userID), string(cachedJSON), 0)
 
 	return
+}
+
+func (tokenService *TokenService) ValidateToken(claims *issuer.JwtClaims, isRefresh bool) error {
+	var ctx = context.Background()
+	cachedJSON, _ := tokenService.Redis.Get(ctx, fmt.Sprintf("token-%d", claims.ID)).Result()
+	cachedTokens := new(CachedTokens)
+	err := json.Unmarshal([]byte(cachedJSON), cachedTokens)
+
+	var tokenUID string
+	if isRefresh {
+		tokenUID = cachedTokens.RefreshUID
+	} else {
+		tokenUID = cachedTokens.AccessUID
+	}
+
+	if err != nil || tokenUID != claims.UID {
+		return errors.New("unable to get token")
+	}
+
+	return nil
 }
