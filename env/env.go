@@ -7,13 +7,13 @@ import (
 
 const defaultBindPort = ":8080"
 
-func GetSecretKey() []byte {
+func GetSecretKey() string {
 	var secretKey = []byte(os.Getenv("SECRET_KEY"))
 	if len(secretKey) == 0 {
-		return []byte("")
+		return ""
 	}
 
-	return secretKey
+	return string(secretKey)
 }
 
 func GetAUD() string {
@@ -24,12 +24,12 @@ func GetISS() string {
 	return os.Getenv("ISSUER_ISS")
 }
 
-func GetExpiresMinutes() uint8 {
+func GetExpiresMinutes() uint {
 	expirationTimeExp := os.Getenv("EXPIRES_MINUTES")
 	if expirationTimeExp != "" {
 		minutes, err := strconv.ParseUint(expirationTimeExp, 10, 32)
 		if err == nil {
-			return uint8(minutes)
+			return uint(minutes)
 		}
 	}
 	return 60
