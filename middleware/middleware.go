@@ -37,37 +37,7 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 	} else if tokenHeader == "" {
 		_, _ = fmt.Fprintf(w, "failed to get token from header request")
 	} else {
-		token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
-
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-
-			if env.GetAUD() != "" {
-				verifiedAudience := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
-				if !verifiedAudience {
-					return nil, fmt.Errorf("failed to verify `aud` claim")
-				}
-			}
-
-			if iss != "" {
-				verifiedIssuer := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
-				if !verifiedIssuer {
-					return nil, fmt.Errorf("failed to verify `iss` claim")
-				}
-			}
-
-			if expiresMinutes > 0 {
-				exp := time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
-				verifiedExpires := token.Claims.(jwt.MapClaims).VerifyExpiresAt(exp, false)
-				if !verifiedExpires {
-					return nil, fmt.Errorf("failed to verify `exp` claim")
-				}
-			}
-
-			return secretKey, nil
-		})
-
+		token, err := ValidateToken(string(secretKey), tokenHeader, aud, iss, expiresMinutes)
 		if token == nil {
 			_, _ = fmt.Fprintf(w, err.Error())
 		} else if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
@@ -78,4 +48,37 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	return false
+}
+
+func ValidateToken(secretKey, token, aud, iss string, expiresMinutes uint8) (*jwt.Token, error) {
+	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		if aud != "" {
+			verifiedAudience := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
+			if !verifiedAudience {
+				return nil, fmt.Errorf("failed to verify `aud` claim")
+			}
+		}
+
+		if iss != "" {
+			verifiedIssuer := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
+			if !verifiedIssuer {
+				return nil, fmt.Errorf("failed to verify `iss` claim")
+			}
+		}
+
+		if expiresMinutes > 0 {
+			exp := time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
+			verifiedExpires := token.Claims.(jwt.MapClaims).VerifyExpiresAt(exp, false)
+			if !verifiedExpires {
+				return nil, fmt.Errorf("failed to verify `exp` claim")
+			}
+		}
+
+		return secretKey, nil
+	})
 }
