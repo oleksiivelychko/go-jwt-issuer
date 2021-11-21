@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"net/http"
 	"net/http/httptest"
@@ -11,7 +12,14 @@ import (
 
 func TestAllowToEndpointMiddleware(t *testing.T) {
 	_ = os.Setenv("SECRET_KEY", "secretkey")
-	token, _, _, _ := issuer.IssueUserJWT(0)
+	_ = os.Setenv("EXPIRES_MINUTES", "10")
+
+	var secretKey = env.GetSecretKey()
+	var aud = env.GetAUD()
+	var iss = env.GetISS()
+	var expiresMinutes = env.GetExpiresMinutes()
+
+	token, _, _, _ := issuer.IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
 
 	closure := func(writer http.ResponseWriter, request *http.Request) {}
 
@@ -52,7 +60,14 @@ func TestAllowToEndpointMiddleware(t *testing.T) {
 
 func TestJwtAuthenticationMiddleware(t *testing.T) {
 	_ = os.Setenv("SECRET_KEY", "secretkey")
-	token, _, _, _ := issuer.IssueUserJWT(0)
+	_ = os.Setenv("EXPIRES_MINUTES", "10")
+
+	var secretKey = env.GetSecretKey()
+	var aud = env.GetAUD()
+	var iss = env.GetISS()
+	var expiresMinutes = env.GetExpiresMinutes()
+
+	token, _, _, _ := issuer.IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
 
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
