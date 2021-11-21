@@ -1,9 +1,9 @@
 package issuer
 
 import (
+	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
-	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"time"
 )
 
@@ -13,17 +13,12 @@ type JwtClaims struct {
 	jwt.StandardClaims
 }
 
-func IssueUserJWT(userID uint) (
+func IssueUserJWT(secretKey, aud, iss string, expiresMinutes, userID uint) (
 	token string,
 	uid string,
 	exp int64,
 	err error,
 ) {
-	var secretKey = env.GetSecretKey()
-	var aud = env.GetAUD()
-	var iss = env.GetISS()
-	var expiresMinutes = env.GetExpiresMinutes()
-
 	exp = time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
 	uid = uuid.New().String()
 
@@ -38,7 +33,39 @@ func IssueUserJWT(userID uint) (
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err = jwtToken.SignedString(secretKey)
+	token, err = jwtToken.SignedString([]byte(secretKey))
 
 	return
+}
+
+func ValidateToken(token, secretKey, aud, iss string, exp int64) (*jwt.Token, error) {
+	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		if aud != "" {
+			verifiedAudience := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
+			if !verifiedAudience {
+				return nil, fmt.Errorf("failed to verify `aud` claim")
+			}
+		}
+
+		if iss != "" {
+			verifiedIssuer := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
+			if !verifiedIssuer {
+				return nil, fmt.Errorf("failed to verify `iss` claim")
+			}
+		}
+
+		if exp > 0 {
+			verifiedExpires := token.Claims.(jwt.MapClaims).VerifyExpiresAt(exp, false)
+			if !verifiedExpires {
+				return nil, fmt.Errorf("failed to verify `exp` claim")
+			}
+		}
+
+		return []byte(secretKey), nil
+	})
 }
