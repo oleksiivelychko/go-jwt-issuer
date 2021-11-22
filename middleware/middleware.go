@@ -6,6 +6,7 @@ import (
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"net/http"
+	"time"
 )
 
 func AllowToEndpoint(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
@@ -28,6 +29,9 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 	var secretKey = env.GetSecretKey()
 	var aud = env.GetAUD()
 	var iss = env.GetISS()
+	var expiresMinutes = env.GetExpiresMinutes()
+	var exp = time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
+
 	tokenHeader := r.Header.Get("Authorization")
 
 	if len(secretKey) == 0 {
@@ -35,7 +39,8 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 	} else if tokenHeader == "" {
 		_, _ = fmt.Fprintf(w, "failed to get token from header request")
 	} else {
-		token, err := issuer.ValidateToken(tokenHeader, secretKey, aud, iss, 0)
+
+		token, err := issuer.ValidateToken(tokenHeader, secretKey, aud, iss, exp)
 		if token == nil {
 			_, _ = fmt.Fprintf(w, err.Error())
 		} else if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
