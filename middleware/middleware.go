@@ -39,7 +39,6 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 	} else if tokenHeader == "" {
 		_, _ = fmt.Fprintf(w, "failed to get token from header request")
 	} else {
-
 		token, err := issuer.ValidateToken(tokenHeader, secretKey, aud, iss, exp)
 		if token == nil {
 			_, _ = fmt.Fprintf(w, err.Error())
