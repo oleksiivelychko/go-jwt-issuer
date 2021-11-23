@@ -2,38 +2,32 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-redis/redis/v8"
 	"github.com/joho/godotenv"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
-	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
+	"github.com/oleksiivelychko/go-jwt-issuer/service"
 	"log"
 	"net/http"
-	"os"
 )
 
-func jwtIssuer(w http.ResponseWriter, r *http.Request) {
-	var secretKey = env.GetSecretKey()
-	if len(secretKey) > 0 {
+func issueAccessTokenHandler(tokenService *service.Service) func(w http.ResponseWriter, r *http.Request) {
+	if tokenService.Redis == nil {
+		panic("nil Redis!")
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		var secretKey = env.GetSecretKey()
 		var aud = env.GetAUD()
 		var iss = env.GetISS()
 		var expiresMinutes = env.GetExpiresMinutes()
 
-		validToken, _, _, err := issuer.IssueJWT(secretKey, 0, expiresMinutes, aud, iss)
+		accessToken, refreshToken, exp, err := tokenService.GenerateTokenPair(secretKey, aud, iss, expiresMinutes, 1)
 		if err != nil {
-			_, _ = fmt.Fprintf(w, "failed to get the complete signed token: %s", err.Error())
+			_, _ = fmt.Fprintf(w, "failed to get access token: %s", err.Error())
 		}
-
-		_, _ = fmt.Fprintf(w, validToken)
-	} else {
-		_, _ = fmt.Fprintf(w, "environment variable `SECRET_KEY` is not defined")
+		_, _ = fmt.Fprintf(w, "access-token: %s \n", accessToken)
+		_, _ = fmt.Fprintf(w, "refresh-token: %s \n", refreshToken)
+		_, _ = fmt.Fprintf(w, "expiration-time: %d \n", exp)
 	}
-}
-
-func initRedis() *redis.Client {
-	addr := fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT"))
-	return redis.NewClient(&redis.Options{
-		Addr: addr,
-	})
 }
 
 func main() {
@@ -42,9 +36,10 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	_ = initRedis()
+	tokenService := service.Service{}
+	tokenService.InitRedis()
 
-	http.HandleFunc("/", jwtIssuer)
-	http.HandleFunc("/issue", jwtIssuer)
+	http.HandleFunc("/", issueAccessTokenHandler(&tokenService))
+	http.HandleFunc("/access-token", issueAccessTokenHandler(&tokenService))
 	log.Fatal(http.ListenAndServe(env.GetPort(), nil))
 }
