@@ -11,7 +11,7 @@ import (
 
 func issueAccessTokenHandler(tokenService *service.Service) func(w http.ResponseWriter, r *http.Request) {
 	if tokenService.Redis == nil {
-		panic("nil Redis!")
+		log.Fatal("cannot established redis connection")
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +33,7 @@ func issueAccessTokenHandler(tokenService *service.Service) func(w http.Response
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("error loading .env file")
 	}
 
 	tokenService := service.Service{}
