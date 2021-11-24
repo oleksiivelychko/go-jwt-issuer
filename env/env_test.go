@@ -6,19 +6,24 @@ import (
 	"testing"
 )
 
-func TestGetSecretKey(t *testing.T) {
+func TestEnvConfig(t *testing.T) {
 	_ = os.Setenv("SECRET_KEY", "secretkey")
-	var secretKey = GetSecretKey()
-	if string(secretKey) == "" {
-		t.Errorf("environment variable `SECRET_KEY` is not defined")
-	}
-}
 
-func TestGetPort(t *testing.T) {
-	var port = GetPort()
+	cfg := Config{
+		Port:           GetPort(),
+		SecretKey:      GetSecretKey(),
+		ISS:            GetISS(),
+		AUD:            GetAUD(),
+		ExpiresMinutes: GetExpiresMinutes(),
+	}
+
 	var allowedRangePorts = []string{":80", ":8080", ":443"}
-	_, result := in.StringIn(allowedRangePorts, port)
+	_, result := in.StringIn(allowedRangePorts, cfg.Port)
 	if !result {
-		t.Errorf("given $PORT as %s is not included in allowed range", port)
+		t.Errorf("given $PORT %s is not acceptable", cfg.Port)
+	}
+
+	if cfg.SecretKey == "" {
+		t.Errorf("environment variable `SECRET_KEY` is not defined")
 	}
 }

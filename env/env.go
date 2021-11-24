@@ -5,7 +5,13 @@ import (
 	"strconv"
 )
 
-const defaultBindPort = ":8080"
+type Config struct {
+	Port           string
+	SecretKey      string
+	AUD            string
+	ISS            string
+	ExpiresMinutes uint
+}
 
 func GetSecretKey() string {
 	var secretKey = []byte(os.Getenv("SECRET_KEY"))
@@ -38,7 +44,7 @@ func GetExpiresMinutes() uint {
 func GetPort() string {
 	var port = []byte(os.Getenv("PORT"))
 	if len(port) == 0 {
-		return defaultBindPort
+		return ":8080"
 	}
 
 	return ":" + string(port)
