@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
 	"log"
@@ -31,13 +30,11 @@ func issueAccessTokenHandler(tokenService *service.Service) func(w http.Response
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("error loading .env file")
+	cfg := env.InitConfig()
+	tokenService := service.Service{
+		Env:   cfg,
+		Redis: cfg.InitRedis(),
 	}
-
-	tokenService := service.Service{}
-	tokenService.InitRedis()
 
 	http.HandleFunc("/", issueAccessTokenHandler(&tokenService))
 	http.HandleFunc("/access-token", issueAccessTokenHandler(&tokenService))

@@ -3,30 +3,21 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/go-redis/redis/v8"
+	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
-	"os"
-	"strconv"
 )
 
 type Service struct {
+	Env   *env.Config
 	Redis *redis.Client
 }
 
 type CachedTokens struct {
 	AccessUID  string `json:"access"`
 	RefreshUID string `json:"refresh"`
-}
-
-func (service *Service) InitRedis() {
-	addr := fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT"))
-	db, _ := strconv.ParseInt(os.Getenv("REDIS_HOST"), 10, 32)
-	service.Redis = redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: os.Getenv("REDIS_HOST"),
-		DB:       int(db),
-	})
 }
 
 func (service *Service) GenerateTokenPair(secretKey, aud, iss string, expiresMinutes, userID uint) (
@@ -54,4 +45,24 @@ func (service *Service) GenerateTokenPair(secretKey, aud, iss string, expiresMin
 	service.Redis.Set(ctx, fmt.Sprintf("token-%d", userID), string(cachedJSON), 0)
 
 	return
+}
+
+func (service *Service) ValidateCachedToken(claims *issuer.JwtClaims, isRefresh bool) error {
+	var ctx = context.Background()
+	cachedJSON, _ := service.Redis.Get(ctx, fmt.Sprintf("token-%d", claims.ID)).Result()
+	cachedTokens := new(CachedTokens)
+	err := json.Unmarshal([]byte(cachedJSON), cachedTokens)
+
+	var tokenUID string
+	if isRefresh {
+		tokenUID = cachedTokens.RefreshUID
+	} else {
+		tokenUID = cachedTokens.AccessUID
+	}
+
+	if err != nil || tokenUID != claims.UID {
+		return errors.New("unable to validate cached token")
+	}
+
+	return nil
 }
