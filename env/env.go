@@ -1,6 +1,8 @@
 package env
 
 import (
+	"fmt"
+	"github.com/go-redis/redis/v8"
 	"os"
 	"strconv"
 )
@@ -11,6 +13,30 @@ type Config struct {
 	AUD            string
 	ISS            string
 	ExpiresMinutes uint
+	RedisAddr      string
+	RedisPassword  string
+	RedisDb        int
+}
+
+func InitConfig() *Config {
+	return &Config{
+		Port:           GetPort(),
+		SecretKey:      GetSecretKey(),
+		ISS:            GetISS(),
+		AUD:            GetAUD(),
+		ExpiresMinutes: GetExpiresMinutes(),
+		RedisAddr:      GetRedisAddr(),
+		RedisPassword:  GetRedisPassword(),
+		RedisDb:        GetRedisDb(),
+	}
+}
+
+func (cfg *Config) InitRedis() *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr:     cfg.RedisAddr,
+		Password: cfg.RedisPassword,
+		DB:       cfg.RedisDb,
+	})
 }
 
 func GetSecretKey() string {
@@ -48,4 +74,32 @@ func GetPort() string {
 	}
 
 	return ":" + string(port)
+}
+
+func GetRedisAddr() string {
+	var redisHost = os.Getenv("REDIS_HOST")
+	if redisHost == "" {
+		redisHost = "localhost"
+	}
+	var redisPort = os.Getenv("REDIS_PORT")
+	if redisPort == "" {
+		redisPort = "6379"
+	}
+
+	return fmt.Sprintf("%s:%s", redisHost, redisPort)
+}
+
+func GetRedisPassword() string {
+	return os.Getenv("REDIS_PASSWORD")
+}
+
+func GetRedisDb() int {
+	var redisDb = os.Getenv("REDIS_DB")
+	if redisDb != "" {
+		db, err := strconv.ParseInt(redisDb, 10, 32)
+		if err == nil {
+			return int(db)
+		}
+	}
+	return 0
 }
