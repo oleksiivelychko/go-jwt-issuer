@@ -39,7 +39,7 @@ func IssueUserJWT(secretKey, aud, iss string, expiresMinutes, userID uint) (
 }
 
 func ValidateToken(token, secretKey, aud, iss string, exp int64) (*jwt.Token, error) {
-	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+	return jwt.ParseWithClaims(token, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
