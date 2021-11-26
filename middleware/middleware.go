@@ -6,7 +6,7 @@ import (
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"net/http"
-	"time"
+	"strconv"
 )
 
 func AllowToEndpoint(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
@@ -29,10 +29,12 @@ func validate(w http.ResponseWriter, r *http.Request) bool {
 	var secretKey = env.GetSecretKey()
 	var aud = env.GetAUD()
 	var iss = env.GetISS()
-	var expiresMinutes = env.GetExpiresMinutes()
-	var exp = time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
 
 	tokenHeader := r.Header.Get("Authorization")
+	exp, err := strconv.ParseInt(r.Header.Get("ExpirationTime"), 10, 64)
+	if err != nil {
+		exp = 0
+	}
 
 	if len(secretKey) == 0 {
 		_, _ = fmt.Fprintf(w, "environment variable `SECRET_KEY` is not defined")

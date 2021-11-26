@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestAllowToEndpointMiddleware(t *testing.T) {
@@ -19,12 +21,16 @@ func TestAllowToEndpointMiddleware(t *testing.T) {
 	var iss = env.GetISS()
 	var expiresMinutes = env.GetExpiresMinutes()
 
-	token, _, _, _ := issuer.IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
+	token, _, exp, _ := issuer.IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
+
+	// to validate expiration time
+	time.Sleep(1 * time.Second)
 
 	closure := func(writer http.ResponseWriter, request *http.Request) {}
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("Authorization", token)
+	req.Header.Set("ExpirationTime", strconv.FormatInt(exp, 10))
 
 	res := httptest.NewRecorder()
 
@@ -67,12 +73,16 @@ func TestJwtAuthenticationMiddleware(t *testing.T) {
 	var iss = env.GetISS()
 	var expiresMinutes = env.GetExpiresMinutes()
 
-	token, _, _, _ := issuer.IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
+	token, _, exp, _ := issuer.IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
+
+	// to validate expiration time
+	time.Sleep(1 * time.Second)
 
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("Authorization", token)
+	req.Header.Set("ExpirationTime", strconv.FormatInt(exp, 10))
 
 	res := httptest.NewRecorder()
 
