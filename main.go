@@ -14,12 +14,7 @@ func issueAccessTokenHandler(tokenService *service.Service) func(w http.Response
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		var secretKey = env.GetSecretKey()
-		var aud = env.GetAUD()
-		var iss = env.GetISS()
-		var expiresMinutes = env.GetExpiresMinutes()
-
-		accessToken, refreshToken, exp, err := tokenService.GenerateTokenPair(secretKey, aud, iss, expiresMinutes, 1)
+		accessToken, refreshToken, exp, err := tokenService.GenerateUserTokenPair(1)
 		if err != nil {
 			_, _ = fmt.Fprintf(w, "failed to get access token: %s", err.Error())
 		}
