@@ -27,3 +27,10 @@ REDIS_PORT=6379
 REDIS_PASSWORD=secret
 REDIS_DB=0
 ```
+
+To get Redis data:
+```
+redis-cli --pass secret --no-auth-warning keys token-*
+redis-cli --pass secret --no-auth-warning get token-1
+redis-cli --pass secret --no-auth-warning del token-1
+```
