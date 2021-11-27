@@ -39,28 +39,28 @@ func IssueUserJWT(secretKey, aud, iss string, expiresMinutes, userID uint) (
 }
 
 func ValidateToken(token, secretKey, aud, iss string, exp int64) (*jwt.Token, error) {
-	return jwt.ParseWithClaims(token, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+	return jwt.ParseWithClaims(token, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		if aud != "" {
-			verifiedAudience := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
+			verifiedAudience := token.Claims.(*JwtClaims).VerifyAudience(aud, false)
 			if !verifiedAudience {
 				return nil, fmt.Errorf("failed to verify `aud` claim")
 			}
 		}
 
 		if iss != "" {
-			verifiedIssuer := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
+			verifiedIssuer := token.Claims.(*JwtClaims).VerifyIssuer(iss, false)
 			if !verifiedIssuer {
 				return nil, fmt.Errorf("failed to verify `iss` claim")
 			}
 		}
 
 		if exp > 0 {
-			verifiedExpires := token.Claims.(jwt.MapClaims).VerifyExpiresAt(exp, false)
+			verifiedExpires := token.Claims.(*JwtClaims).VerifyExpiresAt(exp, false)
 			if !verifiedExpires {
 				return nil, fmt.Errorf("failed to verify `exp` claim")
 			}
