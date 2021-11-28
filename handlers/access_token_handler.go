@@ -16,12 +16,23 @@ func AccessTokenHandler(tokenService *service.Service) func(w http.ResponseWrite
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		accessToken, refreshToken, exp, err := tokenService.GenerateUserTokenPair(1)
+		w.Header().Set("Content-Type", "application/json")
+
+		v := r.URL.Query()
+		userID, err := strconv.ParseInt(v.Get("userId"), 10, 64)
 		if err != nil {
-			_, _ = fmt.Fprintf(w, "failed to get access token: %s", err.Error())
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = fmt.Fprintf(w, "unable to get user identifier as `userId` from URL query: %s", err.Error())
+			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
+		accessToken, refreshToken, exp, err := tokenService.GenerateUserTokenPair(uint(userID))
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = fmt.Fprintf(w, "unable to generate user token pair: %s", err.Error())
+			return
+		}
+
 		w.WriteHeader(http.StatusCreated)
 
 		data := &env.JsonJwt{
