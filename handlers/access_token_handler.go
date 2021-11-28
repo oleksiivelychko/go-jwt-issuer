@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func AccessTokenHandler(tokenService *service.Service) func(w http.ResponseWriter, r *http.Request) {
@@ -17,8 +20,16 @@ func AccessTokenHandler(tokenService *service.Service) func(w http.ResponseWrite
 		if err != nil {
 			_, _ = fmt.Fprintf(w, "failed to get access token: %s", err.Error())
 		}
-		_, _ = fmt.Fprintf(w, "access-token: %s \n", accessToken)
-		_, _ = fmt.Fprintf(w, "refresh-token: %s \n", refreshToken)
-		_, _ = fmt.Fprintf(w, "expiration-time: %d \n", exp)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		data := &env.JsonJwt{
+			AccessToken:    accessToken,
+			RefreshToken:   refreshToken,
+			ExpirationTime: strconv.FormatInt(exp, 10),
+		}
+
+		_ = json.NewEncoder(w).Encode(data)
 	}
 }
