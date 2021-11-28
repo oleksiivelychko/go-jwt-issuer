@@ -3,12 +3,11 @@ package env
 import (
 	"context"
 	"github.com/oleksiivelychko/go-helper/in"
-	"os"
 	"testing"
 )
 
 func TestEnvConfig(t *testing.T) {
-	_ = os.Setenv("SECRET_KEY", "secretkey")
+	InitEnv()
 
 	cfg := InitConfig()
 
@@ -24,10 +23,7 @@ func TestEnvConfig(t *testing.T) {
 }
 
 func TestRedisConnection(t *testing.T) {
-	_ = os.Setenv("REDIS_HOST", "localhost")
-	_ = os.Setenv("REDIS_PORT", "6379")
-	_ = os.Setenv("REDIS_PASSWORD", "secret")
-	_ = os.Setenv("REDIS_DB", "0")
+	InitEnv()
 
 	cfg := InitConfig()
 	redis := cfg.InitRedis()
