@@ -9,13 +9,14 @@ import (
 )
 
 func main() {
+	// env.InitEnv() // uncomment for local testing
 	cfg := env.InitConfig()
 	tokenService := service.Service{
 		Env:   cfg,
 		Redis: cfg.InitRedis(),
 	}
 
-	http.HandleFunc("/", handlers.AccessTokenHandler(&tokenService))
-	http.HandleFunc("/access-token", handlers.AccessTokenHandler(&tokenService))
+	http.HandleFunc("/access-token/", handlers.AccessTokenHandler(&tokenService))
+	http.HandleFunc("/refresh-token/", handlers.RefreshTokenHandler(&tokenService))
 	log.Fatal(http.ListenAndServe(env.GetPort(), nil))
 }
