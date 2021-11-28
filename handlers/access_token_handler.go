@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func accessTokenHandler(tokenService *service.Service) func(w http.ResponseWriter, r *http.Request) {
+func AccessTokenHandler(tokenService *service.Service) func(w http.ResponseWriter, r *http.Request) {
 	if tokenService.Redis == nil {
 		log.Fatal("cannot established redis connection")
 	}
