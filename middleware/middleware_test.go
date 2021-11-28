@@ -28,7 +28,7 @@ func TestAllowToEndpointMiddleware(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("Authorization", token)
-	req.Header.Set("ExpirationTime", strconv.FormatInt(exp, 10))
+	req.Header.Set("Expires", strconv.FormatInt(exp, 10))
 
 	res := httptest.NewRecorder()
 
@@ -79,7 +79,7 @@ func TestJwtAuthenticationMiddleware(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("Authorization", token)
-	req.Header.Set("ExpirationTime", strconv.FormatInt(exp, 10))
+	req.Header.Set("Expires", strconv.FormatInt(exp, 10))
 
 	res := httptest.NewRecorder()
 

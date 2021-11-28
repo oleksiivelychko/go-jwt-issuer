@@ -41,7 +41,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 
 	request, _ = http.NewRequest("GET", "/refresh-token?userId=1", nil)
 	request.Header.Set("Authorization", jsonJwt.RefreshToken)
-	request.Header.Set("ExpirationTime", jsonJwt.ExpirationTime)
+	request.Header.Set("Expires", jsonJwt.ExpirationTime)
 
 	response = httptest.NewRecorder()
 

@@ -28,7 +28,7 @@ func RefreshTokenHandler(tokenService *service.Service) func(w http.ResponseWrit
 		}
 
 		token := r.Header.Get("Authorization")
-		exp, err := strconv.ParseInt(r.Header.Get("ExpirationTime"), 10, 64)
+		exp, err := strconv.ParseInt(r.Header.Get("Expires"), 10, 64)
 		if err != nil {
 			exp = 0
 		}

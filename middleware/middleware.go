@@ -30,7 +30,7 @@ func ValidateRequest(w http.ResponseWriter, r *http.Request) bool {
 	var iss = env.GetISS()
 
 	tokenHeader := r.Header.Get("Authorization")
-	exp, err := strconv.ParseInt(r.Header.Get("ExpirationTime"), 10, 64)
+	exp, err := strconv.ParseInt(r.Header.Get("Expires"), 10, 64)
 	if err != nil {
 		exp = 0
 	}

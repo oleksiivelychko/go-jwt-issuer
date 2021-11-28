@@ -14,18 +14,17 @@ func TestIssueAndValidateToken(t *testing.T) {
 	var iss = env.GetISS()
 	var expiresMinutes = env.GetExpiresMinutes()
 
-	token, _, _, err := IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
+	token, _, exp, err := IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
 	if err != nil {
-		t.Errorf("failed to issue signed token: %s", err.Error())
+		t.Errorf("unable to issue signed token: %s", err.Error())
 	}
 
 	// to validate expiration time
 	time.Sleep(1 * time.Second)
 
-	exp := time.Now().Add(time.Minute * time.Duration(9)).Unix()
 	jwtClaims, err := ValidateToken(token, secretKey, aud, iss, exp)
 	if _, ok := jwtClaims.Claims.(*JwtClaims); !ok || !jwtClaims.Valid {
-		t.Errorf("failed to validate signed token: %s", err.Error())
+		t.Errorf("unable to validate signed token: %s", err.Error())
 	}
 }
 
