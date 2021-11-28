@@ -10,7 +10,7 @@ import (
 
 func AllowToEndpoint(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if validate(w, r) {
+		if ValidateRequest(w, r) {
 			endpoint(w, r)
 		}
 	})
@@ -18,13 +18,13 @@ func AllowToEndpoint(endpoint func(http.ResponseWriter, *http.Request)) http.Han
 
 func JwtAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if validate(w, r) {
+		if ValidateRequest(w, r) {
 			next.ServeHTTP(w, r)
 		}
 	})
 }
 
-func validate(w http.ResponseWriter, r *http.Request) bool {
+func ValidateRequest(w http.ResponseWriter, r *http.Request) bool {
 	var secretKey = env.GetSecretKey()
 	var aud = env.GetAUD()
 	var iss = env.GetISS()
