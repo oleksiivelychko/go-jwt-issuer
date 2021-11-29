@@ -83,3 +83,13 @@ func (service *Service) ValidateCachedToken(claims *issuer.JwtClaims, isRefresh 
 
 	return nil
 }
+
+func (service *Service) ClearCachedToken(claims *issuer.JwtClaims) error {
+	var ctx = context.Background()
+	cmd := service.Redis.Del(ctx, fmt.Sprintf("token-%d", claims.ID))
+	if cmd.Err() != nil {
+		return cmd.Err()
+	}
+
+	return nil
+}

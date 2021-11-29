@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestServiceGenerateUserTokenPair(t *testing.T) {
+func TestServiceUserTokenPair(t *testing.T) {
 	env.InitEnv()
 
 	cfg := env.InitConfig()
@@ -37,5 +37,10 @@ func TestServiceGenerateUserTokenPair(t *testing.T) {
 	err = tokenService.ValidateCachedToken(claims, true)
 	if err != nil {
 		t.Errorf("unable to validate cached refresh token: %s", err.Error())
+	}
+
+	err = tokenService.ClearCachedToken(claims)
+	if err != nil {
+		t.Errorf("unable to clear cached user token pair: %s", err.Error())
 	}
 }
