@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"testing"
-	"time"
 )
 
 func TestServiceGenerateUserTokenPair(t *testing.T) {
@@ -19,9 +18,6 @@ func TestServiceGenerateUserTokenPair(t *testing.T) {
 	if err != nil {
 		t.Errorf("unable to generate pair tokens: %s", err.Error())
 	}
-
-	// to validate expiration time
-	time.Sleep(1 * time.Second)
 
 	claims, err := tokenService.ValidateParsedToken(accessToken, exp)
 	if err != nil {
