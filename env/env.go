@@ -42,12 +42,12 @@ func (cfg *Config) InitRedis() *redis.Client {
 }
 
 func GetSecretKey() string {
-	var secretKey = []byte(os.Getenv("SECRET_KEY"))
+	var secretKey = os.Getenv("SECRET_KEY")
 	if len(secretKey) == 0 {
 		return ""
 	}
 
-	return string(secretKey)
+	return secretKey
 }
 
 func GetAUD() string {
@@ -70,12 +70,12 @@ func GetExpiresMinutes() uint {
 }
 
 func GetPort() string {
-	var port = []byte(os.Getenv("PORT"))
+	var port = os.Getenv("PORT")
 	if len(port) == 0 {
 		return ":8080"
 	}
 
-	return ":" + string(port)
+	return fmt.Sprintf(":%s", port)
 }
 
 func GetRedisAddr() string {
