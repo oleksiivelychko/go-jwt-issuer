@@ -7,6 +7,8 @@ import (
 	"strconv"
 )
 
+const AutoLogoffMinutes = 10
+
 type Config struct {
 	Port           string
 	SecretKey      string

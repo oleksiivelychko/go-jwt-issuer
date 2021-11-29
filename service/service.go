@@ -8,6 +8,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
+	"time"
 )
 
 type Service struct {
@@ -46,7 +47,7 @@ func (service *Service) GenerateUserTokenPair(userID uint) (
 	})
 
 	var ctx = context.Background()
-	service.Redis.Set(ctx, fmt.Sprintf("token-%d", userID), string(cachedJSON), 0)
+	service.Redis.Set(ctx, fmt.Sprintf("token-%d", userID), string(cachedJSON), time.Minute*env.AutoLogoffMinutes)
 
 	return
 }
@@ -79,6 +80,11 @@ func (service *Service) ValidateCachedToken(claims *issuer.JwtClaims, isRefresh 
 
 	if err != nil || tokenUID != claims.UID {
 		return errors.New("unable to validate cached token")
+	}
+
+	cmd := service.Redis.Expire(ctx, fmt.Sprintf("token-%d", claims.ID), time.Minute*env.AutoLogoffMinutes)
+	if cmd.Err() != nil {
+		return cmd.Err()
 	}
 
 	return nil
