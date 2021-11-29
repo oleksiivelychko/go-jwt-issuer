@@ -39,7 +39,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 		t.Fatalf("unable to unmarshal response body: %s", err.Error())
 	}
 
-	request, _ = http.NewRequest("GET", "/refresh-token?userId=1", nil)
+	request, _ = http.NewRequest("POST", "/refresh-token", nil)
 	request.Header.Set("Authorization", jsonJwt.RefreshToken)
 	request.Header.Set("Expires", jsonJwt.ExpirationTime)
 

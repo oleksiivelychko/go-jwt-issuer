@@ -17,6 +17,10 @@ func RefreshTokenHandler(tokenService *service.Service) func(w http.ResponseWrit
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 
 		validated := middleware.ValidateRequest(w, r)
@@ -49,15 +53,7 @@ func RefreshTokenHandler(tokenService *service.Service) func(w http.ResponseWrit
 			return
 		}
 
-		v := r.URL.Query()
-		userID, err := strconv.ParseInt(v.Get("userId"), 10, 64)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			_, _ = fmt.Fprintf(w, "unable to get user identifier as `userId` from URL query: %s", err.Error())
-			return
-		}
-
-		accessToken, refreshToken, exp, err := tokenService.GenerateUserTokenPair(uint(userID))
+		accessToken, refreshToken, exp, err := tokenService.GenerateUserTokenPair(claims.ID)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			_, _ = fmt.Fprintf(w, "unable to regenerate user token pair: %s", err.Error())
