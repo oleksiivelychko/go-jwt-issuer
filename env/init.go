@@ -3,11 +3,11 @@ package env
 import "os"
 
 type JsonJwt struct {
-	AccessToken    string `json:"access-token"`
-	RefreshToken   string `json:"refresh-token"`
-	ExpirationTime string `json:"expiration-time"`
-	ErrorMessage   string `json:"error-message"`
-	ErrorCode      uint8  `json:"error-code"`
+	AccessToken    string `json:"access-token,omitempty"`
+	RefreshToken   string `json:"refresh-token,omitempty"`
+	ExpirationTime string `json:"expiration-time,omitempty"`
+	ErrorMessage   string `json:"error-message,omitempty"`
+	ErrorCode      uint8  `json:"error-code,omitempty"`
 }
 
 func InitEnv() {
