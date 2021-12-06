@@ -47,7 +47,10 @@ func (service *Service) GenerateUserTokenPair(userID uint) (
 	})
 
 	var ctx = context.Background()
-	service.Redis.Set(ctx, fmt.Sprintf("token-%d", userID), string(cachedJSON), time.Minute*env.AutoLogoffMinutes)
+	cmd := service.Redis.Set(ctx, fmt.Sprintf("token-%d", userID), string(cachedJSON), time.Minute*env.AutoLogoffMinutes)
+	if cmd.Err() != nil {
+		err = cmd.Err()
+	}
 
 	return
 }
