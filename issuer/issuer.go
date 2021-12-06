@@ -13,6 +13,15 @@ type JwtClaims struct {
 	jwt.StandardClaims
 }
 
+const (
+	UnexpectedSigningMethod = iota + 1
+	FailedAudienceClaim
+	FailedIssuerClaim
+	FailedExpirationTimeClaim
+	FailedToGetTokenFromHeaderRequest
+	EnvironmentVariableSecretKeyIsNotDefined
+)
+
 func IssueUserJWT(secretKey, aud, iss string, expiresMinutes, userID uint) (
 	token string,
 	uid string,
@@ -38,7 +47,7 @@ func IssueUserJWT(secretKey, aud, iss string, expiresMinutes, userID uint) (
 	return
 }
 
-func ValidateToken(token, secretKey, aud, iss string, exp int64) (*jwt.Token, error) {
+func ValidateToken(token, secretKey, aud, iss string, exp int64) (parsedToken *jwt.Token, err error) {
 	return jwt.ParseWithClaims(token, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
