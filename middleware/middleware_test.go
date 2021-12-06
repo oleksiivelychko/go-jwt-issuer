@@ -37,28 +37,24 @@ func TestAllowToEndpointMiddleware(t *testing.T) {
 	handler := AllowToEndpoint(closure)
 	handler.ServeHTTP(res, req)
 
-	if string(res.Body.Bytes()) == "environment variable `SECRET_KEY` is not defined" {
-		t.Errorf(string(res.Body.Bytes()))
+	responseMessage := string(res.Body.Bytes())
+	if responseMessage == "environment variable `SECRET_KEY` is not defined" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if string(res.Body.Bytes()) == "failed to get token from header request" {
-		t.Errorf(string(res.Body.Bytes()))
+	if responseMessage == "failed to get token from header request" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if strings.HasPrefix(string(res.Body.Bytes()), "unexpected signing method") {
-		t.Errorf(string(res.Body.Bytes()))
+	if strings.HasPrefix(responseMessage, "unexpected signing method") {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if string(res.Body.Bytes()) == "failed to verify `aud` claim" {
-		t.Errorf(string(res.Body.Bytes()))
+	if responseMessage == "failed to verify `aud` claim" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if string(res.Body.Bytes()) == "failed to verify `iss` claim" {
-		t.Errorf(string(res.Body.Bytes()))
+	if responseMessage == "failed to verify `iss` claim" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if string(res.Body.Bytes()) == "failed to verify `exp` claim" {
-		t.Errorf(string(res.Body.Bytes()))
+	if responseMessage == "failed to verify `exp` claim" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
 }
 
@@ -86,27 +82,23 @@ func TestJwtAuthenticationMiddleware(t *testing.T) {
 	handler := JwtAuthentication(nextHandler)
 	handler.ServeHTTP(res, req)
 
-	if string(res.Body.Bytes()) == "environment variable `SECRET_KEY` is not defined" {
-		t.Errorf(string(res.Body.Bytes()))
+	responseMessage := string(res.Body.Bytes())
+	if responseMessage == "environment variable `SECRET_KEY` is not defined" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if string(res.Body.Bytes()) == "failed to get token from header request" {
-		t.Errorf(string(res.Body.Bytes()))
+	if responseMessage == "failed to get token from header request" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if strings.HasPrefix(string(res.Body.Bytes()), "unexpected signing method") {
-		t.Errorf(string(res.Body.Bytes()))
+	if strings.HasPrefix(responseMessage, "unexpected signing method") {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if string(res.Body.Bytes()) == "failed to verify `aud` claim" {
-		t.Errorf(string(res.Body.Bytes()))
+	if responseMessage == "failed to verify `aud` claim" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if string(res.Body.Bytes()) == "failed to verify `iss` claim" {
-		t.Errorf(string(res.Body.Bytes()))
+	if responseMessage == "failed to verify `iss` claim" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
-
-	if string(res.Body.Bytes()) == "failed to verify `exp` claim" {
-		t.Errorf(string(res.Body.Bytes()))
+	if responseMessage == "failed to verify `exp` claim" {
+		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
 	}
 }
