@@ -23,25 +23,11 @@ func RefreshTokenHandler(tokenService *service.Service) func(w http.ResponseWrit
 
 		w.Header().Set("Content-Type", "application/json")
 
-		validated := middleware.ValidateRequest(w, r)
-		if !validated {
-			w.WriteHeader(http.StatusUnauthorized)
-			_, _ = fmt.Fprintf(w, "\nunable to validate refresh token")
-			log.Printf("\nunable to validate refresh token")
-			return
-		}
-
-		token := r.Header.Get("Authorization")
-		exp, err := strconv.ParseInt(r.Header.Get("Expires"), 10, 64)
+		claims, _, err := middleware.ValidateRequest(w, r)
 		if err != nil {
-			exp = 0
-		}
-
-		claims, err := tokenService.ValidateParsedToken(token, exp)
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			_, _ = fmt.Fprintf(w, "unable to validate parsed refresh token: %s", err.Error())
-			log.Printf("unable to validate parsed refresh token: %s", err.Error())
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = fmt.Fprint(w, err)
+			log.Print(err)
 			return
 		}
 
