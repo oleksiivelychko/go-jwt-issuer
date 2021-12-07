@@ -19,5 +19,6 @@ func main() {
 	http.HandleFunc("/access-token/", handlers.AccessTokenHandler(&tokenService))
 	http.HandleFunc("/refresh-token/", handlers.RefreshTokenHandler(&tokenService))
 	http.HandleFunc("/clear-token/", handlers.ClearTokenHandler(&tokenService))
+	http.HandleFunc("/authorize-token/", handlers.AuthorizeTokenHandler(&tokenService))
 	log.Fatal(http.ListenAndServe(env.GetPort(), nil))
 }
