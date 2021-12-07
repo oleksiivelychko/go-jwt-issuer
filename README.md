@@ -13,23 +13,36 @@ To generate a new tokens pair for user with identifier 1:
 ```
 GET http://0.0.0.0:8080/access-token/?userId=1
 GET http://127.0.0.1:30000/access-token/?userId=1
+GET https://oleksiivelychkogojwtissuer.herokuapp.com/access-token/?userId=1
 ```
 
 To re-generate the tokens pair for user with identifier 1:
 ```
-GET http://0.0.0.0:8080/refresh-token/?userId=1
-GET http://127.0.0.1:30000/refresh-token/?userId=1
+POST http://0.0.0.0:8080/refresh-token
+POST http://127.0.0.1:30000/refresh-token
+POST https://oleksiivelychkogojwtissuer.herokuapp.com/refresh-token
 
 Accept: application/json
 Authorization: <refresh-token>
 Expires: <expiration-time>
 ```
 
+To remove the tokens pair for user with identifier 1:
+```
+POST http://0.0.0.0:8080/clear-token
+POST http://127.0.0.1:30000/clear-token
+POST https://oleksiivelychkogojwtissuer.herokuapp.com/clear-token
+
+Accept: application/json
+Authorization: <access-token>
+Expires: <expiration-time>
+```
+
 Available .env variables with default values:
 ```
 SECRET_KEY=secretkey
-AUDIENCE_AUD=account.jwt.local
-ISSUER_ISS=jwt.local
+AUDIENCE_AUD=oleksiivelychkogoaccount.herokuapp.com
+ISSUER_ISS=oleksiivelychkogojwtissuer.herokuapp.com
 EXPIRES_MINUTES=5
 PORT=8080
 REDIS_HOST=localhost
