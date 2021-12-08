@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
@@ -23,27 +22,24 @@ func RefreshTokenHandler(tokenService *service.Service) func(w http.ResponseWrit
 
 		w.Header().Set("Content-Type", "application/json")
 
-		claims, _, err := middleware.ValidateRequest(w, r)
+		claims, errorCode, err := middleware.ValidateRequest(w, r)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			_, _ = fmt.Fprint(w, err)
-			log.Print(err)
+			_ = json.NewEncoder(w).Encode(&env.JsonJwt{ErrorMessage: err.Error(), ErrorCode: errorCode})
 			return
 		}
 
 		err = tokenService.ValidateCachedToken(claims, true)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
-			_, _ = fmt.Fprint(w, err.Error())
-			log.Print(err.Error())
+			_ = json.NewEncoder(w).Encode(&env.JsonJwt{ErrorMessage: err.Error()})
 			return
 		}
 
 		accessToken, refreshToken, exp, err := tokenService.GenerateUserTokenPair(claims.ID)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
-			_, _ = fmt.Fprintf(w, "unable to regenerate user token pair: %s", err.Error())
-			log.Printf("unable to regenerate user token pair: %s", err.Error())
+			_ = json.NewEncoder(w).Encode(&env.JsonJwt{ErrorMessage: err.Error()})
 			return
 		}
 
