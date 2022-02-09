@@ -22,7 +22,8 @@ func TestClearTokenHandler(t *testing.T) {
 	request, _ := http.NewRequest("GET", "/access-token/?userId=1", nil)
 	response := httptest.NewRecorder()
 
-	AccessTokenHandler(&tokenService)(response, request)
+	accessTokenHandler := NewAccessTokenHandler(&tokenService)
+	accessTokenHandler.ServeHTTP(response, request)
 
 	if response.Code != 201 {
 		t.Fatalf("non-expected status code %v:\n\tbody: %v", "201", response.Code)
@@ -44,7 +45,8 @@ func TestClearTokenHandler(t *testing.T) {
 	request.Header.Set("Expires", jsonJwt.ExpirationTime)
 	response = httptest.NewRecorder()
 
-	ClearTokenHandler(&tokenService)(response, request)
+	clearTokenHandler := NewClearTokenHandler(&tokenService)
+	clearTokenHandler.ServeHTTP(response, request)
 
 	if response.Code != 200 {
 		t.Fatalf("non-expected status code %v:\n\tbody: %v", "200", response.Code)
