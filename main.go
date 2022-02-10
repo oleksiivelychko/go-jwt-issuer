@@ -29,9 +29,9 @@ func main() {
 	server := &http.Server{
 		Addr:         env.GetPort(),
 		Handler:      serveMux,
-		IdleTimeout:  120 * time.Second,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
+		IdleTimeout:  2 * time.Minute,
+		ReadTimeout:  1 * time.Minute,
+		WriteTimeout: 1 * time.Minute,
 	}
 
 	go func() {
