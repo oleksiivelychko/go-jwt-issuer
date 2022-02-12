@@ -35,6 +35,7 @@ func main() {
 	}
 
 	go func() {
+		log.Printf("Starting server on port %s", env.GetPort())
 		err := server.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)
