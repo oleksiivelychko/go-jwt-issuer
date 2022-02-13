@@ -23,7 +23,8 @@ func (h *RefreshTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		log.Fatal("cannot established redis connection")
 	}
 
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
