@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/gorilla/mux"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/handlers"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
@@ -20,11 +21,20 @@ func main() {
 		Redis: cfg.InitRedis(),
 	}
 
-	serveMux := http.NewServeMux()
-	serveMux.Handle("/access-token/", handlers.NewAccessTokenHandler(&tokenService))
-	serveMux.Handle("/refresh-token/", handlers.NewRefreshTokenHandler(&tokenService))
-	serveMux.Handle("/clear-token/", handlers.NewClearTokenHandler(&tokenService))
-	serveMux.Handle("/authorize-token/", handlers.NewAuthorizeTokenHandler(&tokenService))
+	serveMux := mux.NewRouter()
+
+	accessTokenHandler := handlers.NewAccessTokenHandler(&tokenService)
+	refreshTokenHandler := handlers.NewRefreshTokenHandler(&tokenService)
+	clearTokenHandler := handlers.NewClearTokenHandler(&tokenService)
+	authorizeTokenHandler := handlers.NewAuthorizeTokenHandler(&tokenService)
+
+	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
+	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
+
+	getRouter.HandleFunc("/access-token", accessTokenHandler.Generate)
+	postRouter.HandleFunc("/access-token", refreshTokenHandler.Prolong)
+	postRouter.HandleFunc("/clear-token", clearTokenHandler.Purge)
+	postRouter.HandleFunc("/authorize-token", authorizeTokenHandler.Auth)
 
 	server := &http.Server{
 		Addr:         env.GetPort(),

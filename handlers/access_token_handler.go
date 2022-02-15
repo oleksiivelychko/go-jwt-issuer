@@ -15,14 +15,14 @@ type AccessTokenHandler struct {
 }
 
 func NewAccessTokenHandler(tokenService *service.Service) *AccessTokenHandler {
-	return &AccessTokenHandler{tokenService}
-}
-
-func (h *AccessTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if h.tokenService.Redis == nil {
+	if tokenService.Redis == nil {
 		log.Fatal("cannot established redis connection")
 	}
 
+	return &AccessTokenHandler{tokenService}
+}
+
+func (h *AccessTokenHandler) Generate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	v := r.URL.Query()

@@ -23,7 +23,7 @@ func TestClearTokenHandler(t *testing.T) {
 	response := httptest.NewRecorder()
 
 	accessTokenHandler := NewAccessTokenHandler(&tokenService)
-	accessTokenHandler.ServeHTTP(response, request)
+	accessTokenHandler.Generate(response, request)
 
 	if response.Code != 201 {
 		t.Fatalf("non-expected status code %v:\n\tbody: %v", "201", response.Code)
@@ -46,7 +46,7 @@ func TestClearTokenHandler(t *testing.T) {
 	response = httptest.NewRecorder()
 
 	clearTokenHandler := NewClearTokenHandler(&tokenService)
-	clearTokenHandler.ServeHTTP(response, request)
+	clearTokenHandler.Purge(response, request)
 
 	if response.Code != 200 {
 		t.Fatalf("non-expected status code %v:\n\tbody: %v", "200", response.Code)

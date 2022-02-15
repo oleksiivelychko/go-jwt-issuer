@@ -14,18 +14,14 @@ type AuthorizeTokenHandler struct {
 }
 
 func NewAuthorizeTokenHandler(tokenService *service.Service) *AuthorizeTokenHandler {
-	return &AuthorizeTokenHandler{tokenService}
-}
-
-func (h *AuthorizeTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if h.tokenService.Redis == nil {
+	if tokenService.Redis == nil {
 		log.Fatal("cannot established redis connection")
 	}
 
-	if r.Method != "POST" {
-		return
-	}
+	return &AuthorizeTokenHandler{tokenService}
+}
 
+func (h *AuthorizeTokenHandler) Auth(w http.ResponseWriter, r *http.Request) {
 	claims, errorCode, err := middleware.ValidateRequest(w, r)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)

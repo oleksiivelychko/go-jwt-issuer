@@ -14,18 +14,14 @@ type ClearTokenHandler struct {
 }
 
 func NewClearTokenHandler(tokenService *service.Service) *ClearTokenHandler {
-	return &ClearTokenHandler{tokenService}
-}
-
-func (h *ClearTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if h.tokenService.Redis == nil {
+	if tokenService.Redis == nil {
 		log.Fatal("cannot established redis connection")
 	}
 
-	if r.Method != "POST" {
-		return
-	}
+	return &ClearTokenHandler{tokenService}
+}
 
+func (h *ClearTokenHandler) Purge(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	claims, _, err := middleware.ValidateRequest(w, r)

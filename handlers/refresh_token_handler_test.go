@@ -23,7 +23,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 	response := httptest.NewRecorder()
 
 	accessTokenHandler := NewAccessTokenHandler(&tokenService)
-	accessTokenHandler.ServeHTTP(response, request)
+	accessTokenHandler.Generate(response, request)
 
 	if response.Code != 201 {
 		t.Fatalf("non-expected status code %v:\n\tbody: %v", "201", response.Code)
@@ -47,7 +47,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 	response = httptest.NewRecorder()
 
 	refreshTokenHandler := NewRefreshTokenHandler(&tokenService)
-	refreshTokenHandler.ServeHTTP(response, request)
+	refreshTokenHandler.Prolong(response, request)
 
 	if response.Code != 201 {
 		t.Fatalf("non-expected status code %v:\n\tbody: %v", "201", response.Code)

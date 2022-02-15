@@ -23,7 +23,7 @@ func TestAccessTokenHandler(t *testing.T) {
 	response := httptest.NewRecorder()
 
 	accessTokenHandler := NewAccessTokenHandler(&tokenService)
-	accessTokenHandler.ServeHTTP(response, request)
+	accessTokenHandler.Generate(response, request)
 
 	if response.Code != 201 {
 		t.Fatalf("non-expected status code %v:\n\tbody: %v", "201", response.Code)

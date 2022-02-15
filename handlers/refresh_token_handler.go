@@ -15,19 +15,14 @@ type RefreshTokenHandler struct {
 }
 
 func NewRefreshTokenHandler(tokenService *service.Service) *RefreshTokenHandler {
-	return &RefreshTokenHandler{tokenService}
-}
-
-func (h *RefreshTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if h.tokenService.Redis == nil {
+	if tokenService.Redis == nil {
 		log.Fatal("cannot established redis connection")
 	}
 
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
+	return &RefreshTokenHandler{tokenService}
+}
 
+func (h *RefreshTokenHandler) Prolong(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	claims, errorCode, err := middleware.ValidateRequest(w, r)
