@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -15,10 +14,6 @@ type AccessTokenHandler struct {
 }
 
 func NewAccessTokenHandler(tokenService *service.Service) *AccessTokenHandler {
-	if tokenService.Redis == nil {
-		log.Fatal("cannot established redis connection")
-	}
-
 	return &AccessTokenHandler{tokenService}
 }
 
