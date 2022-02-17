@@ -19,7 +19,7 @@ func TestAccessTokenHandler(t *testing.T) {
 		Redis: cfg.InitRedis(),
 	}
 
-	request, _ := http.NewRequest("GET", "/access-token/?userId=1", nil)
+	request, _ := http.NewRequest(http.MethodGet, "/access-token/?userId=1", nil)
 	response := httptest.NewRecorder()
 
 	accessTokenHandler := NewAccessTokenHandler(&tokenService)
