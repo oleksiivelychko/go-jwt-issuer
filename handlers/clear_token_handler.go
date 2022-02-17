@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
 	"log"
@@ -14,25 +15,15 @@ type ClearTokenHandler struct {
 }
 
 func NewClearTokenHandler(tokenService *service.Service) *ClearTokenHandler {
-	if tokenService.Redis == nil {
-		log.Fatal("cannot established redis connection")
-	}
-
 	return &ClearTokenHandler{tokenService}
 }
 
-func (h *ClearTokenHandler) Purge(w http.ResponseWriter, r *http.Request) {
+func (h *ClearTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	claims, _, err := middleware.ValidateRequest(w, r)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
+	claims := r.Context().Value(middleware.JWTClaimsCTX{}).(*issuer.JwtClaims)
 
-	err = h.tokenService.ValidateCachedToken(claims, false)
+	err := h.tokenService.ValidateCachedToken(claims, false)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		_, _ = fmt.Fprint(w, err.Error())
