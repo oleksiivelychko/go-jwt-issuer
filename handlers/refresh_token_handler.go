@@ -3,9 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
+	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -15,24 +15,15 @@ type RefreshTokenHandler struct {
 }
 
 func NewRefreshTokenHandler(tokenService *service.Service) *RefreshTokenHandler {
-	if tokenService.Redis == nil {
-		log.Fatal("cannot established redis connection")
-	}
-
 	return &RefreshTokenHandler{tokenService}
 }
 
-func (h *RefreshTokenHandler) Prolong(w http.ResponseWriter, r *http.Request) {
+func (h *RefreshTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	claims, errorCode, err := middleware.ValidateRequest(w, r)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(&env.JsonJwt{ErrorMessage: err.Error(), ErrorCode: errorCode})
-		return
-	}
+	claims := r.Context().Value(middleware.JWTClaimsCTX{}).(*issuer.JwtClaims)
 
-	err = h.tokenService.ValidateCachedToken(claims, true)
+	err := h.tokenService.ValidateCachedToken(claims, true)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		_ = json.NewEncoder(w).Encode(&env.JsonJwt{ErrorMessage: err.Error()})
