@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/handlers"
+	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
 	"log"
 	"net/http"
@@ -14,11 +15,15 @@ import (
 )
 
 func main() {
-	//env.InitEnv() // uncomment for local testing
+	env.InitEnv() // uncomment for local testing
 	cfg := env.InitConfig()
 	tokenService := service.Service{
 		Env:   cfg,
 		Redis: cfg.InitRedis(),
+	}
+
+	if tokenService.Redis == nil {
+		log.Fatal("cannot established redis connection")
 	}
 
 	serveMux := mux.NewRouter()
@@ -30,11 +35,12 @@ func main() {
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
 	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
+	postRouter.Use(middleware.JWT)
 
-	getRouter.HandleFunc("/access-token", accessTokenHandler.Generate)
-	postRouter.HandleFunc("/access-token", refreshTokenHandler.Prolong)
-	postRouter.HandleFunc("/clear-token", clearTokenHandler.Purge)
-	postRouter.HandleFunc("/authorize-token", authorizeTokenHandler.Auth)
+	getRouter.HandleFunc("/access-token", accessTokenHandler.ServeHTTP)
+	postRouter.HandleFunc("/access-token", refreshTokenHandler.ServeHTTP)
+	postRouter.HandleFunc("/clear-token", clearTokenHandler.ServeHTTP)
+	postRouter.HandleFunc("/authorize-token", authorizeTokenHandler.ServeHTTP)
 
 	server := &http.Server{
 		Addr:         env.GetPort(),
