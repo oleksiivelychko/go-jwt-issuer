@@ -26,7 +26,7 @@ func TestAccessTokenHandler(t *testing.T) {
 	accessTokenHandler.ServeHTTP(response, request)
 
 	if response.Code != 201 {
-		t.Fatalf("non-expected status code %v:\n\tbody: %v", "201", response.Code)
+		t.Fatalf("non-expected status code: %d\nbody: %v", response.Code, response.Body)
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
