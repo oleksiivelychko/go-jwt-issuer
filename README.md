@@ -9,6 +9,8 @@ Run tests:
 go clean -testcache && go test ./*/
 ```
 
+P.S. Before test <a href="https://github.com/oleksiivelychko/go-account">account</a> must be running.
+
 To generate a new tokens pair for user with identifier 1:
 ```
 GET http://0.0.0.0:8080/access-token/?userId=1
