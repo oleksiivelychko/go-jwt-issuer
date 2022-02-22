@@ -50,6 +50,7 @@ func main() {
 		WriteTimeout: 1 * time.Minute,
 	}
 
+	// server is run in a separate routine for each request
 	go func() {
 		log.Printf("Starting server on port %s", env.GetPort())
 		err := server.ListenAndServe()
