@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	env.InitEnv() // uncomment for local testing
+	//env.InitEnv() // uncomment for local testing
 	cfg := env.InitConfig()
 	tokenService := service.Service{
 		Env:   cfg,
