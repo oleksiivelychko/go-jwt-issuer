@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gojwtissuer-instance
-          image: oleksvelychko/gojwtissuer
+          image: alexvelychko/gojwtissuer
           ports:
             - containerPort: 8080
           env:
