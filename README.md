@@ -4,13 +4,6 @@
 
 💡 Deployed on <a href="https://oleksiivelychkogojwtissuer.herokuapp.com/access-token/?userId=1">Heroku</a>
 
-Run tests:
-```
-go clean -testcache && go test ./*/
-```
-
-P.S. Before test <a href="https://github.com/oleksiivelychko/go-account">account</a> must be running.
-
 To generate a new tokens pair for user with identifier 1:
 ```
 GET http://0.0.0.0:8080/access-token/?userId=1
@@ -40,7 +33,7 @@ Authorization: <access-token>
 Expires: <expiration-time>
 ```
 
-Available .env variables with default values:
+Available environment variables with default values:
 ```
 SECRET_KEY=secretkey
 AUDIENCE_AUD=oleksiivelychkogoaccount.herokuapp.com
@@ -59,3 +52,5 @@ redis-cli --pass secret --no-auth-warning keys token-*
 redis-cli --pass secret --no-auth-warning get token-1
 redis-cli --pass secret --no-auth-warning del token-1
 ```
+
+P.S. Before test <a href="https://github.com/oleksiivelychko/go-account">account app</a> must be running.
