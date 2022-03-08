@@ -28,7 +28,7 @@ Authorization: <access-token>
 Expires: <expiration-time>
 ```
 
-Available environment variables with default values:
+There are available environment variables with default values:
 ```
 SECRET_KEY=secretkey
 AUDIENCE_AUD=account.jwt.local
