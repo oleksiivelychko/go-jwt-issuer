@@ -48,4 +48,4 @@ redis-cli --pass secret --no-auth-warning get token-1
 redis-cli --pass secret --no-auth-warning del token-1
 ```
 
-P.S. Before test <a href="https://github.com/oleksiivelychko/go-account">account app</a> must be running.
+💡 Before test <a href="https://github.com/oleksiivelychko/go-account">account app</a> must be running.
