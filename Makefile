@@ -1,23 +1,17 @@
 go-build:
-	go build -o bin/go-jwt-issuer -v .
+	go build -o bin/app -v .
 
-heroku-bash:
-	heroku run bash -a oleksiivelychkogojwtissuer
+go-update:
+	go get -u && go mod tidy
 
-heroku-logs:
-	heroku logs -n 200 -a oleksiivelychkogojwtissuer --tail
+go-test:
+	go clean -testcache && go test ./*/
 
 kube-apply:
-	kubectl apply -f .kubernetes/minikube/deployment.yml && kubectl apply -f .kubernetes/minikube/service.yml
-
-kube-apply-gke:
-	kubectl apply -f .kubernetes/gke/deployment.yml && kubectl apply -f .kubernetes/gke/service.yml
+	kubectl apply -f .kubernetes/deployment.yml && kubectl apply -f .kubernetes/service.yml
 
 kube-stop:
 	kubectl delete deployment gojwtissuer-instance && kubectl delete service gojwtissuer-service
 
-build-and-push-docker-hub:
+build-and-push-docker:
 	[[ -z "$(docker images -q alexvelychko/gojwtissuer)" ]] || docker image rm alexvelychko/gojwtissuer && docker buildx build --platform linux/amd64 --tag alexvelychko/gojwtissuer . && docker push alexvelychko/gojwtissuer
-
-build-and-push-gcp-artifact-registry:
-	docker buildx build --platform linux/amd64 --pull --no-cache --tag europe-central2-docker.pkg.dev/PROJECT-NAME/repository/gojwtissuer . && docker push europe-central2-docker.pkg.dev/PROJECT-NAME/repository/gojwtissuer
