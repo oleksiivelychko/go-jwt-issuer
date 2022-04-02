@@ -22,8 +22,9 @@ func main() {
 		Redis: cfg.InitRedis(),
 	}
 
-	if tokenService.Redis == nil {
-		log.Fatal("cannot established redis connection")
+	cmd := tokenService.Redis.Echo(context.Background(), "check")
+	if cmd.Err() != nil {
+		log.Fatalf("cannot established redis connection: %s", cmd.Err())
 	}
 
 	serveMux := mux.NewRouter()
