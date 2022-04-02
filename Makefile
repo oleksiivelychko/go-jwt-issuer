@@ -5,6 +5,7 @@ go-update:
 	go get -u && go mod tidy
 
 go-test:
+	$(warning main:18 env.InitEnv - uncomment for local testing)
 	go clean -testcache && go test ./*/
 
 kube-apply:

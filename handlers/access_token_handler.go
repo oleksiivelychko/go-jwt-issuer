@@ -24,7 +24,7 @@ func (h *AccessTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(v.Get("userId"), 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		_, _ = fmt.Fprintf(w, "unable to get user identifier as `userId` from URL query: %s", err.Error())
+		_, _ = fmt.Fprintf(w, "unable to get user identifier `userId` from URL: %s", err.Error())
 		return
 	}
 

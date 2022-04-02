@@ -37,10 +37,10 @@ func main() {
 	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
 	postRouter.Use(middleware.JWT)
 
-	getRouter.HandleFunc("/access-token", accessTokenHandler.ServeHTTP)
-	postRouter.HandleFunc("/access-token", refreshTokenHandler.ServeHTTP)
-	postRouter.HandleFunc("/clear-token", clearTokenHandler.ServeHTTP)
-	postRouter.HandleFunc("/authorize-token", authorizeTokenHandler.ServeHTTP)
+	getRouter.HandleFunc("/access-token/", accessTokenHandler.ServeHTTP)
+	postRouter.HandleFunc("/access-token/", refreshTokenHandler.ServeHTTP)
+	postRouter.HandleFunc("/clear-token/", clearTokenHandler.ServeHTTP)
+	postRouter.HandleFunc("/authorize-token/", authorizeTokenHandler.ServeHTTP)
 
 	server := &http.Server{
 		Addr:         env.GetPort(),

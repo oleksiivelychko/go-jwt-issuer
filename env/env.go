@@ -78,7 +78,7 @@ func GetRedisUrl() string {
 	}
 
 	var redisUrl = os.Getenv("REDIS_URL")
-	if redisUrl == "" {
+	if redisUrl != "" {
 		return redisUrl
 	}
 
