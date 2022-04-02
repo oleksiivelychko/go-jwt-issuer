@@ -72,11 +72,6 @@ func GetPort() string {
 }
 
 func GetRedisUrl() string {
-	var redisTlsUrl = os.Getenv("REDIS_TLS_URL")
-	if redisTlsUrl != "" {
-		return redisTlsUrl
-	}
-
 	var redisUrl = os.Getenv("REDIS_URL")
 	if redisUrl != "" {
 		return redisUrl
