@@ -15,9 +15,7 @@ type Config struct {
 	AUD            string
 	ISS            string
 	ExpiresMinutes uint
-	RedisAddr      string
-	RedisPassword  string
-	RedisDb        int
+	RedisUrl       string
 }
 
 func InitConfig() *Config {
@@ -27,18 +25,13 @@ func InitConfig() *Config {
 		ISS:            GetISS(),
 		AUD:            GetAUD(),
 		ExpiresMinutes: GetExpiresMinutes(),
-		RedisAddr:      GetRedisAddr(),
-		RedisPassword:  GetRedisPassword(),
-		RedisDb:        GetRedisDb(),
+		RedisUrl:       GetRedisUrl(),
 	}
 }
 
 func (cfg *Config) InitRedis() *redis.Client {
-	return redis.NewClient(&redis.Options{
-		Addr:     cfg.RedisAddr,
-		Password: cfg.RedisPassword,
-		DB:       cfg.RedisDb,
-	})
+	options, _ := redis.ParseURL(GetRedisUrl())
+	return redis.NewClient(options)
 }
 
 func GetSecretKey() string {
@@ -78,30 +71,22 @@ func GetPort() string {
 	return fmt.Sprintf(":%s", port)
 }
 
-func GetRedisAddr() string {
-	var redisHost = os.Getenv("REDIS_HOST")
-	if redisHost == "" {
-		redisHost = "localhost"
-	}
-	var redisPort = os.Getenv("REDIS_PORT")
-	if redisPort == "" {
-		redisPort = "6379"
-	}
-
-	return fmt.Sprintf("%s:%s", redisHost, redisPort)
-}
-
-func GetRedisPassword() string {
-	return os.Getenv("REDIS_PASSWORD")
-}
-
-func GetRedisDb() int {
-	var redisDb = os.Getenv("REDIS_DB")
-	if redisDb != "" {
-		db, err := strconv.ParseInt(redisDb, 10, 32)
-		if err == nil {
-			return int(db)
+func GetRedisUrl() string {
+	var redisUrl = os.Getenv("REDIS_URL")
+	if redisUrl == "" {
+		var redisHost = os.Getenv("REDIS_HOST")
+		if redisHost == "" {
+			redisHost = "localhost"
 		}
+		var redisPort = os.Getenv("REDIS_PORT")
+		if redisPort == "" {
+			redisPort = "6379"
+		}
+		var redisPassword = os.Getenv("REDIS_PASSWORD")
+		if redisPassword == "" {
+			redisPassword = "secret"
+		}
+		redisUrl = fmt.Sprintf("redis://:%s@%s:%s", redisPassword, redisHost, redisPort)
 	}
-	return 0
+	return redisUrl
 }
