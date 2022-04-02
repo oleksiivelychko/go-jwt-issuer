@@ -15,3 +15,12 @@ kube-stop:
 
 build-and-push-docker:
 	[[ -z "$(docker images -q alexvelychko/gojwtissuer)" ]] || docker image rm alexvelychko/gojwtissuer && docker buildx build --platform linux/amd64 --tag alexvelychko/gojwtissuer . && docker push alexvelychko/gojwtissuer
+
+heroku-warn:
+	$(info must be install before as `brew tap heroku/brew && brew install heroku`)
+
+heroku-bash: heroku-warn
+	heroku run bash -a oleksiivelychkogojwtissuer
+
+heroku-logs:
+	heroku logs -n 200 -a oleksiivelychkogojwtissuer --tail
