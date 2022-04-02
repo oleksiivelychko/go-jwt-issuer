@@ -72,21 +72,28 @@ func GetPort() string {
 }
 
 func GetRedisUrl() string {
+	var redisTlsUrl = os.Getenv("REDIS_TLS_URL")
+	if redisTlsUrl != "" {
+		return redisTlsUrl
+	}
+
 	var redisUrl = os.Getenv("REDIS_URL")
 	if redisUrl == "" {
-		var redisHost = os.Getenv("REDIS_HOST")
-		if redisHost == "" {
-			redisHost = "localhost"
-		}
-		var redisPort = os.Getenv("REDIS_PORT")
-		if redisPort == "" {
-			redisPort = "6379"
-		}
-		var redisPassword = os.Getenv("REDIS_PASSWORD")
-		if redisPassword == "" {
-			redisPassword = "secret"
-		}
-		redisUrl = fmt.Sprintf("redis://:%s@%s:%s", redisPassword, redisHost, redisPort)
+		return redisUrl
 	}
-	return redisUrl
+
+	var redisHost = os.Getenv("REDIS_HOST")
+	if redisHost == "" {
+		redisHost = "localhost"
+	}
+	var redisPort = os.Getenv("REDIS_PORT")
+	if redisPort == "" {
+		redisPort = "6379"
+	}
+	var redisPassword = os.Getenv("REDIS_PASSWORD")
+	if redisPassword == "" {
+		redisPassword = "secret"
+	}
+
+	return fmt.Sprintf("redis://:%s@%s:%s", redisPassword, redisHost, redisPort)
 }

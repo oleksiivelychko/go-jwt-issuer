@@ -39,6 +39,7 @@ REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=secret
 REDIS_URL=redis://:password@host:port
+REDIS_TLS_URL=rediss://:password@host:port
 ```
 
 To get/check Redis data:
