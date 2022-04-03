@@ -20,7 +20,6 @@ type Config struct {
 
 func InitConfig() *Config {
 	return &Config{
-		Port:           GetPort(),
 		SecretKey:      GetSecretKey(),
 		ISS:            GetISS(),
 		AUD:            GetAUD(),
@@ -60,15 +59,6 @@ func GetExpiresMinutes() uint {
 		}
 	}
 	return 60
-}
-
-func GetPort() string {
-	var port = os.Getenv("PORT")
-	if len(port) == 0 {
-		return ":8080"
-	}
-
-	return fmt.Sprintf(":%s", port)
 }
 
 func GetRedisUrl() string {

@@ -2,25 +2,8 @@ package env
 
 import (
 	"context"
-	"github.com/oleksiivelychko/go-helper/in"
 	"testing"
 )
-
-func TestEnvConfig(t *testing.T) {
-	InitEnv()
-
-	cfg := InitConfig()
-
-	var allowedRangePorts = []string{":80", ":8080", ":443"}
-	_, result := in.StringIn(allowedRangePorts, cfg.Port)
-	if !result {
-		t.Errorf("given $PORT %s is not acceptable", cfg.Port)
-	}
-
-	if cfg.SecretKey == "" {
-		t.Errorf("environment variable `SECRET_KEY` is not defined")
-	}
-}
 
 func TestRedisConnection(t *testing.T) {
 	InitEnv()

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/gorilla/mux"
+	helperEnv "github.com/oleksiivelychko/go-helper/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/handlers"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
@@ -15,7 +16,8 @@ import (
 )
 
 func main() {
-	//env.InitEnv() // uncomment for local testing
+	env.InitEnv()
+
 	cfg := env.InitConfig()
 	tokenService := service.Service{
 		Env:   cfg,
@@ -39,12 +41,12 @@ func main() {
 	postRouter.Use(middleware.JWT)
 
 	getRouter.HandleFunc("/access-token/", accessTokenHandler.ServeHTTP)
-	postRouter.HandleFunc("/access-token/", refreshTokenHandler.ServeHTTP)
+	postRouter.HandleFunc("/refresh-token/", refreshTokenHandler.ServeHTTP)
 	postRouter.HandleFunc("/clear-token/", clearTokenHandler.ServeHTTP)
 	postRouter.HandleFunc("/authorize-token/", authorizeTokenHandler.ServeHTTP)
 
 	server := &http.Server{
-		Addr:         env.GetPort(),
+		Addr:         helperEnv.GetAddr(),
 		Handler:      serveMux,
 		IdleTimeout:  2 * time.Minute,
 		ReadTimeout:  1 * time.Minute,
@@ -53,7 +55,7 @@ func main() {
 
 	// server is run in a separate routine for each request
 	go func() {
-		log.Printf("Starting server on port %s", env.GetPort())
+		log.Printf("Starting server on %s", helperEnv.GetAddr())
 		err := server.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)

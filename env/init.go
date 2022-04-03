@@ -11,12 +11,31 @@ type JsonJwt struct {
 }
 
 func InitEnv() {
-	_ = os.Setenv("PORT", "8080")
-	_ = os.Setenv("REDIS_HOST", "localhost")
-	_ = os.Setenv("REDIS_PORT", "6379")
-	_ = os.Setenv("REDIS_PASSWORD", "secret")
-	_ = os.Setenv("SECRET_KEY", "secretkey")
-	_ = os.Setenv("EXPIRES_MINUTES", "1")
-	_ = os.Setenv("AUDIENCE_AUD", "account.jwt.local")
-	_ = os.Setenv("ISSUER_ISS", "jwt.local")
+	if os.Getenv("HOST") == "" {
+		_ = os.Setenv("HOST", "localhost")
+	}
+	if os.Getenv("PORT") == "" {
+		_ = os.Setenv("PORT", "8080")
+	}
+	if os.Getenv("REDIS_HOST") == "" {
+		_ = os.Setenv("REDIS_HOST", "localhost")
+	}
+	if os.Getenv("REDIS_PORT") == "" {
+		_ = os.Setenv("REDIS_PORT", "6379")
+	}
+	if os.Getenv("REDIS_PASSWORD") == "" {
+		_ = os.Setenv("REDIS_PASSWORD", "secret")
+	}
+	if os.Getenv("SECRET_KEY") == "" {
+		_ = os.Setenv("SECRET_KEY", "secretkey")
+	}
+	if os.Getenv("EXPIRES_MINUTES") == "" {
+		_ = os.Setenv("EXPIRES_MINUTES", "1")
+	}
+	if os.Getenv("AUDIENCE_AUD") == "" {
+		_ = os.Setenv("AUDIENCE_AUD", "account.jwt.local")
+	}
+	if os.Getenv("ISSUER_ISS") == "" {
+		_ = os.Setenv("ISSUER_ISS", "jwt.local")
+	}
 }
