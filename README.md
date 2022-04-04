@@ -39,12 +39,12 @@ SECRET_KEY=secretkey
 AUDIENCE_AUD=oleksiivelychkogoaccount.herokuapp.com
 ISSUER_ISS=oleksiivelychkogojwtissuer.herokuapp.com
 EXPIRES_MINUTES=60
-HOST=http://localhost
+HOST=0.0.0.0
 PORT=8080
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=secret
-REDIS_URL=redis://:password@host:port
+REDIS_URL=redis://:secret@localhost:6379
 ```
 
 To work with Redis data:
