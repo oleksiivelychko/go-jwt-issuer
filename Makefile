@@ -2,7 +2,7 @@ go-build:
 	go build -o bin/app -v .
 
 go-update:
-	go get -u && go mod tidy
+	go get -u ./... && go mod tidy
 
 go-test:
 	$(warning main:18 env.InitEnv - uncomment for local testing)
