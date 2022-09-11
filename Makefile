@@ -8,16 +8,24 @@ go-upgrade:
 	go mod edit -go=1.18
 
 go-test:
-	$(warning main:18 env.InitEnv - uncomment for local testing)
+	$(warning main:19 env.SetDefaults - uncomment for local testing)
 	go clean -testcache && go test ./*/
 
+kube-ns:
+	kubectl create ns gojwtissuer
+
 kube-apply:
-	kubectl apply -f .kubernetes/deployment.yml && kubectl apply -f .kubernetes/service.yml
+	kubectl apply -f .kubernetes/deployment.yml \
+	&& kubectl apply -f .kubernetes/service.yml
 
-kube-stop:
-	kubectl delete deployment gojwtissuer-deployment && kubectl delete service gojwtissuer-service
+kube-delete:
+	kubectl delete deployment gojwtissuer-dpl --namespace=gojwtissuer \
+	&& kubectl delete service gojwtissuer-srv --namespace=gojwtissuer
 
-build-and-push-docker:
-	$(warning `instead of <local> prefix use dockerhub account name.`)
-	[[ -z "$(docker images -q local/gojwtissuer)" ]] || docker image rm local/gojwtissuer && docker buildx build --platform linux/amd64 --tag local/gojwtissuer . && docker push local/gojwtissuer
+build:
+	[[ -z "$(docker images -q local/gojwtissuer)" ]] || docker image rm local/gojwtissuer && \
+	docker buildx build --platform linux/amd64 --tag local/gojwtissuer .
 
+push-to-dockerhub: build
+	$(warning instead of `local` prefix use dockerhub account name and change `imagePullPolicy`.)
+	docker push local/gojwtissuer
