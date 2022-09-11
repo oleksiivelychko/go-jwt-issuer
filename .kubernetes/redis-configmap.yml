@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: redis
-  namespace: gojwtissuer
+  namespace: gons
 data:
   redis-config: |
     maxmemory 2mb

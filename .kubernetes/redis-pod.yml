@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: redis
-  namespace: gojwtissuer
+  namespace: gons
   labels:
     app: gojwtissuer
 spec:
