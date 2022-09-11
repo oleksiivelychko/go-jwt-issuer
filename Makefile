@@ -1,8 +1,11 @@
 go-build:
 	go build -o bin/app -v .
 
-go-update:
+go-update: go-upgrade
 	go get -u ./... && go mod tidy
+
+go-upgrade:
+	go mod edit -go=1.18
 
 go-test:
 	$(warning main:18 env.InitEnv - uncomment for local testing)
@@ -15,13 +18,5 @@ kube-stop:
 	kubectl delete deployment gojwtissuer-instance && kubectl delete service gojwtissuer-service
 
 build-and-push-docker:
-	[[ -z "$(docker images -q alexvelychko/gojwtissuer)" ]] || docker image rm alexvelychko/gojwtissuer && docker buildx build --platform linux/amd64 --tag alexvelychko/gojwtissuer . && docker push alexvelychko/gojwtissuer
+	[[ -z "$(docker images -q mydockerhubaccount/gojwtissuer)" ]] || docker image rm mydockerhubaccount/gojwtissuer && docker buildx build --platform linux/amd64 --tag mydockerhubaccount/gojwtissuer . && docker push mydockerhubaccount/gojwtissuer
 
-heroku-warn:
-	$(info must be install before as `brew tap heroku/brew && brew install heroku`)
-
-heroku-bash: heroku-warn
-	heroku run bash -a oleksiivelychkogojwtissuer
-
-heroku-logs:
-	heroku logs -n 200 -a oleksiivelychkogojwtissuer --tail
