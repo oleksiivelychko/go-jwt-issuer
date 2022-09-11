@@ -18,8 +18,6 @@ const (
 	FailedAudienceClaim
 	FailedIssuerClaim
 	FailedExpirationTimeClaim
-	FailedToGetTokenFromHeaderRequest
-	EnvironmentVariableSecretKeyIsNotDefined
 )
 
 func IssueUserJWT(secretKey, aud, iss string, expiresMinutes, userID uint) (
