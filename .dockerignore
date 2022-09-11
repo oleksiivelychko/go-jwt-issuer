@@ -1,4 +1,7 @@
 .idea
+.kubernetes
 .run
-_kubernetes
+.gitignore
+Makefile
+Procfile
 README.md
