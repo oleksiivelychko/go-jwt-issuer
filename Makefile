@@ -44,6 +44,9 @@ build:
 	[[ -z "$(docker images -q local/gojwtissuer)" ]] || docker image rm local/gojwtissuer && \
 	docker buildx build --platform linux/amd64 --tag local/gojwtissuer .
 
+run-redis:
+	docker run --rm --name redis-server -p 6379:6379 redis --requirepass "secret"
+
 push-to-dockerhub: build
 	$(warning instead of `local` prefix use dockerhub account name and change `imagePullPolicy`.)
 	docker push local/gojwtissuer
