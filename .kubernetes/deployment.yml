@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gojwtissuer-deployment
+  name: gojwtissuer-dpl
+  namespace: gojwtissuer
   labels:
     app: gojwtissuer
 spec:
@@ -15,8 +16,9 @@ spec:
         app: gojwtissuer
     spec:
       containers:
-        - name: gojwtissuer-deployment
-          image: local/gojwtissuer
+        - name: gojwtissuer
+          image: local/gojwtissuer:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:
