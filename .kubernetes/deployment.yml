@@ -21,6 +21,12 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
+          securityContext:
+            seccompProfile:
+              type: Unconfined
+            capabilities:
+              add:
+                - SYS_PTRACE
           env:
             - name: SECRET_KEY
               value: "secretkey"
