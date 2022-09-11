@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gojwtissuer-instance
+  name: gojwtissuer-deployment
   labels:
     app: gojwtissuer
 spec:
@@ -15,8 +15,8 @@ spec:
         app: gojwtissuer
     spec:
       containers:
-        - name: gojwtissuer-instance
-          image: alexvelychko/gojwtissuer
+        - name: gojwtissuer-deployment
+          image: local/gojwtissuer
           ports:
             - containerPort: 8080
           env:
