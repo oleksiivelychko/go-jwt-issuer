@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gojwtissuer-dpl
+  name: gojwtissuer
   namespace: gojwtissuer
   labels:
     app: gojwtissuer
