@@ -13,3 +13,6 @@ spec:
     - port: 8080
       targetPort: 8080
       name: http
+    - port: 56268
+      targetPort: 56268
+      name: dlv

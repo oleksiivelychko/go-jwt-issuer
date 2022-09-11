@@ -17,10 +17,11 @@ spec:
     spec:
       containers:
         - name: gojwtissuer
-          image: local/gojwtissuer:latest
+          image: local/dlv-gojwtissuer:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
+            - containerPort: 56268
           securityContext:
             seccompProfile:
               type: Unconfined
@@ -28,14 +29,8 @@ spec:
               add:
                 - SYS_PTRACE
           env:
-            - name: SECRET_KEY
-              value: "secretkey"
-            - name: PORT
-              value: "8080"
+            - name: HOST
+              value: ""
             - name: REDIS_HOST
               value: "redis"
-            - name: REDIS_PORT
-              value: "6379"
-            - name: REDIS_PASSWORD
-              value: "secret"
 
