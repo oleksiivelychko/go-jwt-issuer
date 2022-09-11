@@ -1,6 +1,8 @@
 package env
 
-import "os"
+import (
+	"os"
+)
 
 type JsonJwt struct {
 	AccessToken    string `json:"access-token,omitempty"`
@@ -11,7 +13,9 @@ type JsonJwt struct {
 }
 
 func SetDefaults() {
-	if os.Getenv("HOST") == "" {
+	if host, isSet := os.LookupEnv("HOST"); isSet == true {
+		_ = os.Setenv("HOST", host)
+	} else {
 		_ = os.Setenv("HOST", "localhost")
 	}
 	if os.Getenv("PORT") == "" {
