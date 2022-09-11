@@ -10,7 +10,6 @@ go-update:
 	go get -u ./... && go mod tidy
 
 go-test:
-	$(warning main:18 env.SetDefaults - uncomment for local testing)
 	go clean -testcache && go test ./*/
 
 kube-apply-all:
@@ -23,9 +22,11 @@ kube-redis-cli:
 	kubectl -n gons exec -it redis -- redis-cli
 
 secret-create:
-	kubectl delete secret redis -n gons
 	@/bin/echo -n 'secret' > .kubernetes/secrets/password.txt
 	kubectl create secret generic redis --from-file=password=.kubernetes/secrets/password.txt -n gons
+
+secret-delete:
+	kubectl delete secret redis -n gons
 
 secret-verify:
 	kubectl get secrets/redis -o yaml -n gons
