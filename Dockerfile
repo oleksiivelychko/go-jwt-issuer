@@ -8,8 +8,8 @@ RUN go mod download
 
 COPY ./ ./
 
-RUN go build -o /docker-go-jwt-issuer
+RUN go build -o /go-jwt-issuer
 
 EXPOSE 8080
 
-CMD [ "/docker-go-jwt-issuer" ]
+CMD [ "/go-jwt-issuer" ]
