@@ -1,14 +1,14 @@
 module github.com/oleksiivelychko/go-jwt-issuer
 
 // +heroku goVersion go1.16
-go 1.17
+go 1.18
 
 require (
-	github.com/go-redis/redis/v8 v8.11.4
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
-	github.com/oleksiivelychko/go-helper v0.0.0-20220403045951-f3fd40772938
+	github.com/oleksiivelychko/go-helper v0.0.0-20220429045140-97947692be50
 )
 
 require (
