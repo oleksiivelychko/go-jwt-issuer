@@ -12,7 +12,7 @@ import (
 )
 
 func TestClearTokenHandler(t *testing.T) {
-	env.InitEnv()
+	env.SetDefaults()
 
 	cfg := env.InitConfig()
 	tokenService := service.Service{
@@ -56,7 +56,7 @@ func TestClearTokenHandler(t *testing.T) {
 }
 
 func TestAuthorizeByRemovedTokenHandler(t *testing.T) {
-	env.InitEnv()
+	env.SetDefaults()
 
 	cfg := env.InitConfig()
 	tokenService := service.Service{

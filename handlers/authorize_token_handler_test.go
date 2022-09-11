@@ -12,7 +12,7 @@ import (
 )
 
 func TestAuthorizeTokenHandler(t *testing.T) {
-	env.InitEnv()
+	env.SetDefaults()
 
 	cfg := env.InitConfig()
 	tokenService := service.Service{

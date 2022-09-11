@@ -14,7 +14,7 @@ import (
 )
 
 func TestRefreshTokenHandler(t *testing.T) {
-	env.InitEnv()
+	env.SetDefaults()
 
 	cfg := env.InitConfig()
 	tokenService := service.Service{
@@ -81,7 +81,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 }
 
 func TestAuthorizeByExpiredTokenHandler(t *testing.T) {
-	env.InitEnv()
+	env.SetDefaults()
 
 	cfg := env.InitConfig()
 	tokenService := service.Service{

@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	env.InitEnv()
+	env.SetDefaults()
 
 	cfg := env.InitConfig()
 	tokenService := service.Service{

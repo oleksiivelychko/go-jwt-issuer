@@ -10,7 +10,7 @@ type JsonJwt struct {
 	ErrorCode      uint8  `json:"error-code,omitempty"`
 }
 
-func InitEnv() {
+func SetDefaults() {
 	if os.Getenv("HOST") == "" {
 		_ = os.Setenv("HOST", "localhost")
 	}

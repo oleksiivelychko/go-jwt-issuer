@@ -11,7 +11,7 @@ import (
 )
 
 func TestJWTMiddleware(t *testing.T) {
-	env.InitEnv()
+	env.SetDefaults()
 
 	var secretKey = env.GetSecretKey()
 	var aud = env.GetAUD()

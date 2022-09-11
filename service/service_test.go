@@ -6,7 +6,7 @@ import (
 )
 
 func TestServiceUserTokenPair(t *testing.T) {
-	env.InitEnv()
+	env.SetDefaults()
 
 	cfg := env.InitConfig()
 	tokenService := Service{

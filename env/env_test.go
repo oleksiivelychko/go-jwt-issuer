@@ -6,7 +6,7 @@ import (
 )
 
 func TestRedisConnection(t *testing.T) {
-	InitEnv()
+	SetDefaults()
 
 	cfg := InitConfig()
 	redis := cfg.InitRedis()
