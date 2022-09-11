@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gojwtissuer
+  name: gojwtissuer-dpl
   namespace: gojwtissuer
   labels:
     app: gojwtissuer
@@ -26,3 +26,10 @@ spec:
               value: "secretkey"
             - name: PORT
               value: "8080"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              value: "secret"
+
