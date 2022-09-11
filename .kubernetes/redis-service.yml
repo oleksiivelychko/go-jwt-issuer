@@ -6,13 +6,12 @@ metadata:
   labels:
     app: gojwtissuer
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gojwtissuer
   ports:
     - port: 6379
       targetPort: 6379
-      nodePort: 30001
       name: redis
 
 
