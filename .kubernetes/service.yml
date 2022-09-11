@@ -1,22 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gojwtissuer-srv
+  name: gojwtissuer
   namespace: gojwtissuer
   labels:
     app: gojwtissuer
 spec:
+  type: NodePort
   selector:
     app: gojwtissuer
-  type: NodePort
   ports:
     - port: 8080
-      nodePort: 30000
       targetPort: 8080
-      protocol: TCP
+      nodePort: 30000
       name: http
-    - port: 6379
-      nodePort: 30001
-      targetPort: 6379
-      protocol: TCP
-      name: redis
