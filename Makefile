@@ -20,13 +20,13 @@ kube-delete-all:
 	kubectl delete -f .kubernetes
 
 kube-redis-cli:
-	kubectl -n gojwtissuer exec -it redis -- redis-cli
+	kubectl -n gons exec -it redis -- redis-cli
 
 secret-create:
-	kubectl delete secret redis -n gojwtissuer
+	kubectl delete secret redis -n gons
 	@/bin/echo -n 'secret' > .kubernetes/secrets/password.txt
-	kubectl create secret generic redis --from-file=password=.kubernetes/secrets/password.txt -n gojwtissuer
+	kubectl create secret generic redis --from-file=password=.kubernetes/secrets/password.txt -n gons
 
 secret-verify:
-	kubectl get secrets/redis -o yaml -n gojwtissuer
-	kubectl get secret redis -o jsonpath='{.data.password}' -n gojwtissuer | base64 --decode
+	kubectl get secrets/redis -o yaml -n gons
+	kubectl get secret redis -o jsonpath='{.data.password}' -n gons | base64 --decode
