@@ -1,0 +1,26 @@
+### Generate a new tokens pair for user with identifier 1.
+GET http://127.0.0.1:8080/access-token?userId=1
+
+> {%
+    client.global.set("access_token", response.body.access_token);
+    client.global.set("refresh_token", response.body.refresh_token);
+    client.global.set("expiration_time", response.body.expiration_time);
+%}
+
+### Re-generate the tokens pair for user by `refresh_token` from above request.
+POST http://127.0.0.1:8080/refresh-token
+Accept: application/json
+Authorization: {{refresh_token}}
+Expires: {{expiration_time}}
+
+> {%
+    client.global.set("access_token", response.body.access_token);
+    client.global.set("refresh_token", response.body.refresh_token);
+    client.global.set("expiration_time", response.body.expiration_time);
+%}
+
+### Remove the tokens pair for user by `access_token` from above request.
+POST http://127.0.0.1:8080/clear-token
+Accept: application/json
+Authorization: {{access_token}}
+Expires: {{expiration_time}}
