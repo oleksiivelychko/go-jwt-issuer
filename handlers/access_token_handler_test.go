@@ -41,14 +41,14 @@ func TestAccessTokenHandler(t *testing.T) {
 	}
 
 	if jsonJwt.AccessToken == "" {
-		t.Fatalf("got empty `access-token`")
+		t.Fatalf("got empty `access_token`")
 	}
 
 	if jsonJwt.RefreshToken == "" {
-		t.Fatalf("got empty `refresh-token`")
+		t.Fatalf("got empty `refresh_token`")
 	}
 
 	if jsonJwt.ExpirationTime == "" {
-		t.Fatalf("got empty `expiration-time`")
+		t.Fatalf("got empty `expiration_time`")
 	}
 }

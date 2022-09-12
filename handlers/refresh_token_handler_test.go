@@ -68,15 +68,15 @@ func TestRefreshTokenHandler(t *testing.T) {
 	}
 
 	if jsonJwt.AccessToken == "" {
-		t.Fatalf("got empty `access-token`")
+		t.Fatalf("got empty `access_token`")
 	}
 
 	if jsonJwt.RefreshToken == "" {
-		t.Fatalf("got empty `refresh-token`")
+		t.Fatalf("got empty `refresh_token`")
 	}
 
 	if jsonJwt.ExpirationTime == "" {
-		t.Fatalf("got empty `expiration-time`")
+		t.Fatalf("got empty `expiration_time`")
 	}
 }
 
@@ -95,7 +95,7 @@ func TestAuthorizeByExpiredTokenHandler(t *testing.T) {
 	accessTokenHandler := NewAccessTokenHandler(&tokenService)
 	accessTokenHandler.ServeHTTP(response, request)
 
-	if response.Code != 201 {
+	if response.Code != 200 {
 		t.Fatalf("non-expected status code: %d\nbody: %v", response.Code, response.Body)
 	}
 
@@ -149,6 +149,6 @@ func TestAuthorizeByExpiredTokenHandler(t *testing.T) {
 	}
 
 	if string(body) != "failed to verify `exp` claim\n" {
-		t.Fatalf("got valid `expiration-time`")
+		t.Fatalf("got valid `expiration_time`")
 	}
 }
