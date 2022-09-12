@@ -43,6 +43,6 @@ func (h *RefreshTokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		ExpirationTime: strconv.FormatInt(exp, 10),
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(data)
 }
