@@ -8,8 +8,8 @@ type JsonJwt struct {
 	AccessToken    string `json:"access_token,omitempty"`
 	RefreshToken   string `json:"refresh_token,omitempty"`
 	ExpirationTime string `json:"expiration_time,omitempty"`
-	ErrorMessage   string `json:"error-message,omitempty"`
-	ErrorCode      uint8  `json:"error-code,omitempty"`
+	ErrorMessage   string `json:"error_message,omitempty"`
+	ErrorCode      uint8  `json:"error_code,omitempty"`
 }
 
 func SetDefaults() {
