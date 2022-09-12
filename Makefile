@@ -18,8 +18,16 @@ kube-apply-all:
 kube-delete-all:
 	kubectl delete -f .kubernetes
 
-kube-redis-cli:
-	kubectl -n gons exec -it redis -- redis-cli
+kube-redis-cli-all:
+	kubectl -n gons exec -it redis -- redis-cli --pass secret --no-auth-warning keys token-*
+
+# make kube-redis-cli-get [userId]
+kube-redis-cli-get:
+	kubectl -n gons exec -it redis -- redis-cli --pass secret --no-auth-warning get token-$(id)
+
+# make kube-redis-cli-del [userId]
+kube-redis-cli-del:
+	kubectl -n gons exec -it redis -- redis-cli --pass secret --no-auth-warning del token-$(id)
 
 secret-create:
 	@/bin/echo -n 'secret' > .kubernetes/secrets/password.txt
