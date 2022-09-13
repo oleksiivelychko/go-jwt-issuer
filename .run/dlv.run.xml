@@ -1,7 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="dlv" type="GoRemoteDebugConfigurationType" factoryName="Go Remote" port="56268">
-    <option name="disconnectOption" value="LEAVE" />
-    <disconnect value="LEAVE" />
+    <option name="disconnectOption" value="ASK" />
     <method v="2" />
   </configuration>
 </component>
