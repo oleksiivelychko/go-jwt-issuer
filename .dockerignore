@@ -3,5 +3,4 @@
 .run
 .gitignore
 Makefile
-Procfile
 README.md
