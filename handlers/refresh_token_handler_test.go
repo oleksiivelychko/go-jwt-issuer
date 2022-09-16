@@ -53,7 +53,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 	handler := middleware.JWT(refreshTokenHandler)
 	handler.ServeHTTP(response, request)
 
-	if response.Code != 201 {
+	if response.Code != 200 {
 		t.Fatalf("non-expected status code: %d\nbody: %v", response.Code, response.Body)
 	}
 
@@ -95,7 +95,7 @@ func TestAuthorizeByExpiredTokenHandler(t *testing.T) {
 	accessTokenHandler := NewAccessTokenHandler(&tokenService)
 	accessTokenHandler.ServeHTTP(response, request)
 
-	if response.Code != 200 {
+	if response.Code != 201 {
 		t.Fatalf("non-expected status code: %d\nbody: %v", response.Code, response.Body)
 	}
 
