@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/oleksiivelychko/go-jwt-issuer/env"
 	"github.com/oleksiivelychko/go-jwt-issuer/service"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -29,7 +29,7 @@ func TestAccessTokenHandler(t *testing.T) {
 		t.Fatalf("non-expected status code: %d\nbody: %v", response.Code, response.Body)
 	}
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		t.Fatalf("unable to read response body: %s", err.Error())
 	}
