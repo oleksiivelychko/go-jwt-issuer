@@ -2,12 +2,12 @@
 
 ### Microservice generates pair JSON web tokens - access-token and refresh-token signed by user identifier.
 
-Create namespace before deploy on Kubernetes cluster:
+📌 Create namespace before deploy on Kubernetes cluster:
 ```
 kubectl create ns gons
 ```
 
-💡 There are available environment variables with default values:
+📌 There are available environment variables with default values:
 ```
 SECRET_KEY=secretkey
 AUDIENCE_AUD=account.jwt.local
