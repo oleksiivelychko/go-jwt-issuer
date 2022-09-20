@@ -4,3 +4,5 @@
 .gitignore
 Makefile
 README.md
+requests.http
+social_preview.png
