@@ -2,6 +2,7 @@
 .kubernetes
 .run
 .gitignore
+LICENSE
 Makefile
 README.md
 requests.http
