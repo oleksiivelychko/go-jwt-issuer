@@ -6,6 +6,7 @@ docker-run-redis:
 	docker run --rm --name redis-server -p 6379:6379 redis --requirepass "secret"
 
 go-update:
+	go clean --modcache
 	go mod edit -go=1.19
 	go get -u ./... && go mod tidy
 
