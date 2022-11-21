@@ -55,7 +55,7 @@ func main() {
 		WriteTimeout: 1 * time.Minute,
 	}
 
-	// server is run in a separate routine for each request
+	// server is being run in a separate routine for each request
 	go func() {
 		log.Printf("Starting server on %s", addr)
 		err := server.ListenAndServe()
@@ -71,6 +71,8 @@ func main() {
 	sig := <-signalChannel
 	log.Println("Received terminate, graceful shutdown", sig)
 
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	_ = server.Shutdown(ctx)
 }
