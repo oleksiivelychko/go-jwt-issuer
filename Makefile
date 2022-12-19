@@ -8,6 +8,7 @@ docker-run-redis:
 go-update:
 	go clean --modcache
 	go mod edit -go=1.19
+	go mod edit -module github.com/oleksiivelychko/go-jwt-issuer
 	go get -u ./... && go mod tidy
 
 go-test:
