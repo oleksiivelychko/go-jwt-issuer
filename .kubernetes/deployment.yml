@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: gojwtissuer
-          image: local/dlv-gojwtissuer:latest
+          image: local/gojwtissuerdlv:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
