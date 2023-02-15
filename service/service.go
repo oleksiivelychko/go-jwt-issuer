@@ -61,11 +61,12 @@ func (service *Service) ValidateParsedToken(token string, exp int64) (claims *is
 		return
 	}
 
-	if claims, ok := parsedToken.Claims.(*issuer.JwtClaims); ok && parsedToken.Valid {
-		return claims, nil
+	var isOk bool = false
+	if claims, isOk = parsedToken.Claims.(*issuer.JwtClaims); isOk && parsedToken.Valid {
+		return
 	}
 
-	return
+	return claims, errors.New("unable to get claims of token")
 }
 
 func (service *Service) ValidateCachedToken(claims *issuer.JwtClaims, isRefresh bool) error {
