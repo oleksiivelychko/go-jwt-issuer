@@ -61,7 +61,7 @@ func (service *Service) ValidateParsedToken(token string, exp int64) (claims *is
 		return
 	}
 
-	var isOk bool = false
+	var isOk = false
 	if claims, isOk = parsedToken.Claims.(*issuer.JwtClaims); isOk && parsedToken.Valid {
 		return
 	}
