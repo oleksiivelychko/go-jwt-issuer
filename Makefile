@@ -1,13 +1,13 @@
 docker-build:
-	[[ -z "$(docker images -q local/dlv-gojwtissuer)" ]] || docker image rm local/dlv-gojwtissuer
-	docker build --tag local/dlv-gojwtissuer . -f dlv.dockerfile
+	[[ -z "$(docker images -q local/gojwtissuerdlv)" ]] || docker image rm local/gojwtissuerdlv
+	docker build --no-cache --tag local/gojwtissuerdlv . -f dlv.dockerfile
 
 docker-run-redis:
 	docker run --rm --name redis-server -p 6379:6379 redis --requirepass "secret"
 
-go-update:
+go-refresh:
 	go clean --modcache
-	go mod edit -go=1.19
+	go mod edit -go=1.20
 	go mod edit -module github.com/oleksiivelychko/go-jwt-issuer
 	go get -u ./... && go mod tidy
 
