@@ -11,11 +11,11 @@ func TestConfig_InitRedis(t *testing.T) {
 
 	err := redisClient.Set(ctx, "key", "value", 0).Err()
 	if err != nil {
-		t.Errorf("unable to set key-value into RedisClient storage: %s", err)
+		t.Error(err)
 	}
 
 	_, err = redisClient.Get(ctx, "key").Result()
 	if err != nil {
-		t.Errorf("unable to get key-value from RedisClient storage:. %s", err)
+		t.Error(err)
 	}
 }
