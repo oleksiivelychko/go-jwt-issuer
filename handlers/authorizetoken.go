@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
-	"github.com/oleksiivelychko/go-jwt-issuer/service"
+	"github.com/oleksiivelychko/go-jwt-issuer/token"
 	"net/http"
 )
 
 type AuthorizeToken struct {
-	tokenService *service.TokenService
+	tokenService *token.Service
 }
 
-func NewAuthorizeToken(tokenService *service.TokenService) *AuthorizeToken {
+func NewAuthorizeToken(tokenService *token.Service) *AuthorizeToken {
 	return &AuthorizeToken{tokenService}
 }
 

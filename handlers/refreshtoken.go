@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
-	"github.com/oleksiivelychko/go-jwt-issuer/service"
+	"github.com/oleksiivelychko/go-jwt-issuer/token"
 	"net/http"
 	"strconv"
 )
 
 type RefreshToken struct {
-	tokenService *service.TokenService
+	tokenService *token.Service
 }
 
-func NewRefreshToken(tokenService *service.TokenService) *RefreshToken {
+func NewRefreshToken(tokenService *token.Service) *RefreshToken {
 	return &RefreshToken{tokenService}
 }
 
@@ -29,7 +29,7 @@ func (handler *RefreshToken) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	accessToken, refreshToken, exp, err := handler.tokenService.GenerateUserTokenPair(claims.ID)
+	accessToken, refreshToken, exp, err := handler.tokenService.GeneratePairTokens(claims.ID)
 	if err != nil {
 		resp.WriteHeader(http.StatusUnauthorized)
 		_ = json.NewEncoder(resp).Encode(&issuer.ResponseJWT{ErrorMessage: err.Error()})

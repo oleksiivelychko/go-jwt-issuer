@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
-	"github.com/oleksiivelychko/go-jwt-issuer/service"
+	"github.com/oleksiivelychko/go-jwt-issuer/token"
 	"log"
 	"net/http"
 )
 
 type ClearToken struct {
-	tokenService *service.TokenService
+	tokenService *token.Service
 }
 
-func NewClearToken(tokenService *service.TokenService) *ClearToken {
+func NewClearToken(tokenService *token.Service) *ClearToken {
 	return &ClearToken{tokenService}
 }
 

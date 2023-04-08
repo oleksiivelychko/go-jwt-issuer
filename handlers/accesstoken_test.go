@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/oleksiivelychko/go-jwt-issuer/config"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
-	"github.com/oleksiivelychko/go-jwt-issuer/service"
+	"github.com/oleksiivelychko/go-jwt-issuer/token"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -12,7 +12,7 @@ import (
 )
 
 func TestHandler_AccessToken(t *testing.T) {
-	tokenService := service.TokenService{
+	tokenService := token.Service{
 		Config:      config.NewConfig(),
 		RedisClient: config.InitRedis(),
 	}
@@ -29,13 +29,13 @@ func TestHandler_AccessToken(t *testing.T) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		t.Fatalf("unable to read response body: %s", err.Error())
+		t.Fatal(err.Error())
 	}
 
 	responseJWT := &issuer.ResponseJWT{}
 	err = json.Unmarshal(body, &responseJWT)
 	if err != nil {
-		t.Fatalf("unable to unmarshal response body: %s", err.Error())
+		t.Fatalf(err.Error())
 	}
 
 	if responseJWT.AccessToken == "" {

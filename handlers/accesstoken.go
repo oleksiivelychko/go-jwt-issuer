@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
-	"github.com/oleksiivelychko/go-jwt-issuer/service"
+	"github.com/oleksiivelychko/go-jwt-issuer/token"
 	"net/http"
 	"strconv"
 )
 
 type AccessToken struct {
-	tokenService *service.TokenService
+	tokenService *token.Service
 }
 
-func NewAccessToken(tokenService *service.TokenService) *AccessToken {
+func NewAccessToken(tokenService *token.Service) *AccessToken {
 	return &AccessToken{tokenService}
 }
 
@@ -28,7 +28,7 @@ func (handler *AccessToken) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	accessToken, refreshToken, exp, err := handler.tokenService.GenerateUserTokenPair(uint(userID))
+	accessToken, refreshToken, exp, err := handler.tokenService.GeneratePairTokens(uint(userID))
 	if err != nil {
 		resp.WriteHeader(http.StatusServiceUnavailable)
 		_, _ = fmt.Fprintf(resp, "unable to generate pair of tokens: %s", err.Error())
