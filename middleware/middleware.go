@@ -2,64 +2,50 @@ package middleware
 
 import (
 	"context"
-	"github.com/oleksiivelychko/go-jwt-issuer/env"
+	"github.com/oleksiivelychko/go-jwt-issuer/config"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
-type JWTClaimsCTX struct{}
+type ContextClaimsJWT struct{}
 
 func JWT(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		var secretKey = env.GetSecretKey()
-		var aud = env.GetAUD()
-		var iss = env.GetISS()
-		var status = 400
+	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
+		var secretKey = config.GetSecretKey()
+		var audienceAUD = config.GetAudience()
+		var issuerISS = config.GetIssuer()
 
-		tokenHeader := r.Header.Get("Authorization")
-		exp, err := strconv.ParseInt(r.Header.Get("Expires"), 10, 64)
+		tokenHeader := request.Header.Get("Authorization")
+		expiresIn, err := strconv.ParseInt(request.Header.Get("Expires"), 10, 64)
 		if err != nil {
-			exp = 0
+			expiresIn = 0
 		}
 
-		if len(secretKey) == 0 {
-			http.Error(rw, "environment variable `SECRET_KEY` is not defined", http.StatusBadRequest)
+		if secretKey == "" {
+			http.Error(responseWriter, "environment variable 'SECRET_KEY' is not defined", http.StatusBadRequest)
 			return
-		} else if tokenHeader == "" {
-			http.Error(rw, "failed to get token from header request", http.StatusBadRequest)
+		}
+
+		if tokenHeader == "" {
+			http.Error(responseWriter, "unable to get token from 'Authorization' header", http.StatusBadRequest)
 			return
+		}
+
+		token, tokenErr := issuer.ParseToken(tokenHeader, secretKey, audienceAUD, issuerISS, expiresIn)
+		if tokenErr != nil {
+			http.Error(responseWriter, tokenErr.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		if claims, ok := token.Claims.(*issuer.ClaimsJWT); ok && token.Valid {
+			contextWithClaimJWT := context.WithValue(request.Context(), ContextClaimsJWT{}, claims)
+			request = request.WithContext(contextWithClaimJWT)
 		} else {
-			token, err := issuer.ValidateToken(tokenHeader, secretKey, aud, iss, exp)
-
-			if err != nil {
-				if strings.Contains(err.Error(), "unexpected signing method") {
-					status = issuer.UnexpectedSigningMethod
-				}
-				if strings.Contains(err.Error(), "failed to verify `aud` claim") {
-					status = issuer.FailedAudienceClaim
-				}
-				if strings.Contains(err.Error(), "failed to verify `iss` claim") {
-					status = issuer.FailedIssuerClaim
-				}
-				if strings.Contains(err.Error(), "token is expired by") {
-					status = issuer.FailedExpirationTimeClaim
-				}
-			}
-
-			if token == nil {
-				http.Error(rw, err.Error(), status)
-				return
-			} else if claims, ok := token.Claims.(*issuer.JwtClaims); ok && token.Valid {
-				ctx := context.WithValue(r.Context(), JWTClaimsCTX{}, claims)
-				r = r.WithContext(ctx)
-			} else {
-				http.Error(rw, err.Error(), http.StatusUnauthorized)
-				return
-			}
+			http.Error(responseWriter, "unable to validate token", http.StatusBadRequest)
+			return
 		}
 
-		next.ServeHTTP(rw, r)
+		next.ServeHTTP(responseWriter, request)
 	})
 }

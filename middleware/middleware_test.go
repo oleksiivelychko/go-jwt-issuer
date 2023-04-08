@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/oleksiivelychko/go-jwt-issuer/env"
+	"github.com/oleksiivelychko/go-jwt-issuer/config"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"net/http"
 	"net/http/httptest"
@@ -10,15 +10,13 @@ import (
 	"testing"
 )
 
-func TestJWTMiddleware(t *testing.T) {
-	env.SetDefaults()
+func TestMiddleware_ValidateJWT(t *testing.T) {
+	var secretKey = config.GetSecretKey()
+	var aud = config.GetAudience()
+	var iss = config.GetIssuer()
+	var expiresMinutes = config.GetExpirationTimeMinutes()
 
-	var secretKey = env.GetSecretKey()
-	var aud = env.GetAUD()
-	var iss = env.GetISS()
-	var expiresMinutes = env.GetExpiresMinutes()
-
-	token, _, exp, _ := issuer.IssueUserJWT(secretKey, aud, iss, expiresMinutes, 1)
+	token, _, exp, _ := issuer.IssueJWT(secretKey, aud, iss, expiresMinutes, 1)
 
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
@@ -26,28 +24,29 @@ func TestJWTMiddleware(t *testing.T) {
 	req.Header.Set("Authorization", token)
 	req.Header.Set("Expires", strconv.FormatInt(exp, 10))
 
-	res := httptest.NewRecorder()
+	resp := httptest.NewRecorder()
 
-	handler := JWT(nextHandler)
-	handler.ServeHTTP(res, req)
+	middlewareHandler := JWT(nextHandler)
+	middlewareHandler.ServeHTTP(resp, req)
 
-	responseMessage := string(res.Body.Bytes())
-	if responseMessage == "environment variable `SECRET_KEY` is not defined" {
-		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
+	respMessage := string(resp.Body.Bytes())
+
+	if respMessage == "environment variable 'SECRET_KEY' is not defined" {
+		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
-	if responseMessage == "failed to get token from header request" {
-		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
+	if respMessage == "unable to get token from 'Authorization' header" {
+		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
-	if strings.HasPrefix(responseMessage, "unexpected signing method") {
-		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
+	if strings.HasPrefix(respMessage, "unexpected signing method") {
+		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
-	if responseMessage == "failed to verify `aud` claim" {
-		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
+	if respMessage == "unable to verify 'aud' claim" {
+		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
-	if responseMessage == "failed to verify `iss` claim" {
-		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
+	if respMessage == "unable to verify 'iss' claim" {
+		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
-	if responseMessage == "failed to verify `exp` claim" {
-		t.Errorf("status: %d, message: %s", res.Code, responseMessage)
+	if respMessage == "unable to verify 'exp' claim" {
+		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
 }
