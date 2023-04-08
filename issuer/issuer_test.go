@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func TestIssuer_IssueValidateToken(t *testing.T) {
+func TestIssuer_ValidateIssuedToken(t *testing.T) {
 	var secretKey = config.GetSecretKey()
 	var aud = config.GetAudience()
 	var iss = config.GetIssuer()
@@ -14,7 +14,7 @@ func TestIssuer_IssueValidateToken(t *testing.T) {
 
 	token, _, exp, err := IssueJWT(secretKey, aud, iss, expiresMinutes, 1)
 	if err != nil {
-		t.Errorf("unable to issue signed token: %s", err.Error())
+		t.Fatal(err.Error())
 	}
 
 	// to validate expiration time
@@ -22,11 +22,11 @@ func TestIssuer_IssueValidateToken(t *testing.T) {
 
 	claimsJWT, err := ParseToken(token, secretKey, aud, iss, exp)
 	if _, ok := claimsJWT.Claims.(*ClaimsJWT); !ok || !claimsJWT.Valid {
-		t.Errorf("unable to validate signed token: %s", err.Error())
+		t.Fatal(err.Error())
 	}
 }
 
-func BenchmarkIssuer_IssueAndValidateToken(b *testing.B) {
+func BenchmarkIssuer_ValidateIssuedToken(b *testing.B) {
 	var secretKey = config.GetSecretKey()
 	var aud = config.GetAudience()
 	var iss = config.GetIssuer()
