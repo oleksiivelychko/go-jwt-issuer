@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/oleksiivelychko/go-jwt-issuer/env"
+	"github.com/oleksiivelychko/go-jwt-issuer/config"
 	"github.com/oleksiivelychko/go-jwt-issuer/handlers"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
-	"github.com/oleksiivelychko/go-jwt-issuer/service"
+	"github.com/oleksiivelychko/go-jwt-issuer/token"
 	"log"
 	"net/http"
 	"os"
@@ -15,31 +15,24 @@ import (
 )
 
 func main() {
-	env.SetDefaults()
-	addr := os.Getenv("HOST") + ":" + os.Getenv("PORT")
+	tokenService := token.NewService(config.NewConfig(), config.InitRedis())
 
-	cfg := env.InitConfig()
-	tokenService := service.Service{
-		Env:   cfg,
-		Redis: cfg.InitRedis(),
-	}
-
-	cmd := tokenService.Redis.Ping(context.Background())
+	cmd := tokenService.RedisClient.Ping(context.Background())
 	if cmd.Err() != nil {
-		log.Fatalf("Cannot established Redis connection: %s", cmd.Err())
+		log.Fatal(cmd.Err())
 	} else {
-		log.Printf("Established Redis connection: %s", cfg.RedisUrl)
+		log.Printf("successful redis connection: %s", tokenService.RedisClient)
 	}
 
-	serveMux := mux.NewRouter()
+	muxRouter := mux.NewRouter()
 
-	accessTokenHandler := handlers.NewAccessTokenHandler(&tokenService)
-	refreshTokenHandler := handlers.NewRefreshTokenHandler(&tokenService)
-	clearTokenHandler := handlers.NewClearTokenHandler(&tokenService)
-	authorizeTokenHandler := handlers.NewAuthorizeTokenHandler(&tokenService)
+	accessTokenHandler := handlers.NewAccessToken(tokenService)
+	refreshTokenHandler := handlers.NewRefreshToken(tokenService)
+	clearTokenHandler := handlers.NewClearToken(tokenService)
+	authorizeTokenHandler := handlers.NewAuthorizeToken(tokenService)
 
-	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
-	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
+	getRouter := muxRouter.Methods(http.MethodGet).Subrouter()
+	postRouter := muxRouter.Methods(http.MethodPost).Subrouter()
 	postRouter.Use(middleware.JWT)
 
 	getRouter.HandleFunc("/access-token", accessTokenHandler.ServeHTTP)
@@ -47,29 +40,30 @@ func main() {
 	postRouter.HandleFunc("/clear-token", clearTokenHandler.ServeHTTP)
 	postRouter.HandleFunc("/authorize-token", authorizeTokenHandler.ServeHTTP)
 
+	addr := config.GetServerAddr()
 	server := &http.Server{
 		Addr:         addr,
-		Handler:      serveMux,
+		Handler:      muxRouter,
 		IdleTimeout:  2 * time.Minute,
 		ReadTimeout:  1 * time.Minute,
 		WriteTimeout: 1 * time.Minute,
 	}
 
-	// server is being run in a separate routine for each request
+	// server is being run in a separate goroutine for each request
 	go func() {
-		log.Printf("Starting server on %s", addr)
+		log.Printf("starting server on %s", addr)
 		err := server.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)
 		}
 	}()
 
-	signalChannel := make(chan os.Signal)
-	signal.Notify(signalChannel, os.Interrupt)
-	signal.Notify(signalChannel, os.Kill)
+	signalCh := make(chan os.Signal)
+	signal.Notify(signalCh, os.Interrupt)
+	signal.Notify(signalCh, os.Kill)
 
-	sig := <-signalChannel
-	log.Println("Received terminate, graceful shutdown", sig)
+	sig := <-signalCh
+	log.Println("received terminate, graceful shutdown", sig)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
