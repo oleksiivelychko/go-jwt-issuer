@@ -7,29 +7,30 @@ import (
 	"time"
 )
 
-type JwtClaims struct {
+type ClaimsJWT struct {
 	ID  uint   `json:"id"`
 	UID string `json:"uid"`
 	jwt.StandardClaims
 }
 
-const (
-	UnexpectedSigningMethod = iota + 1
-	FailedAudienceClaim
-	FailedIssuerClaim
-	FailedExpirationTimeClaim
-)
+type ResponseJWT struct {
+	AccessToken    string `json:"accessToken,omitempty"`
+	RefreshToken   string `json:"refreshToken,omitempty"`
+	ExpirationTime string `json:"expirationTime,omitempty"`
+	ErrorMessage   string `json:"errorMessage,omitempty"`
+	ErrorCode      uint8  `json:"errorCode,omitempty"`
+}
 
-func IssueUserJWT(secretKey, aud, iss string, expiresMinutes, userID uint) (
+func IssueJWT(secretKey, aud, iss string, expMinutes, userID uint) (
 	token string,
 	uid string,
 	exp int64,
 	err error,
 ) {
-	exp = time.Now().Add(time.Minute * time.Duration(expiresMinutes)).Unix()
+	exp = time.Now().Add(time.Minute * time.Duration(expMinutes)).Unix()
 	uid = uuid.New().String()
 
-	claims := &JwtClaims{
+	claims := &ClaimsJWT{
 		ID:  userID,
 		UID: uid,
 		StandardClaims: jwt.StandardClaims{
@@ -45,31 +46,31 @@ func IssueUserJWT(secretKey, aud, iss string, expiresMinutes, userID uint) (
 	return
 }
 
-func ValidateToken(token, secretKey, aud, iss string, exp int64) (parsedToken *jwt.Token, err error) {
-	return jwt.ParseWithClaims(token, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
+func ParseToken(token, secretKey, aud, iss string, exp int64) (*jwt.Token, error) {
+	return jwt.ParseWithClaims(token, &ClaimsJWT{}, func(token *jwt.Token) (interface{}, error) {
 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		if aud != "" {
-			verifiedAudience := token.Claims.(*JwtClaims).VerifyAudience(aud, false)
+			verifiedAudience := token.Claims.(*ClaimsJWT).VerifyAudience(aud, false)
 			if !verifiedAudience {
-				return nil, fmt.Errorf("failed to verify `aud` claim")
+				return nil, fmt.Errorf("unable to verify 'aud' claim")
 			}
 		}
 
 		if iss != "" {
-			verifiedIssuer := token.Claims.(*JwtClaims).VerifyIssuer(iss, false)
+			verifiedIssuer := token.Claims.(*ClaimsJWT).VerifyIssuer(iss, false)
 			if !verifiedIssuer {
-				return nil, fmt.Errorf("failed to verify `iss` claim")
+				return nil, fmt.Errorf("unable to verify 'iss' claim")
 			}
 		}
 
 		if exp > 0 {
-			verifiedExpires := token.Claims.(*JwtClaims).VerifyExpiresAt(exp, false)
-			if !verifiedExpires {
-				return nil, fmt.Errorf("failed to verify `exp` claim")
+			verifiedExpiration := token.Claims.(*ClaimsJWT).VerifyExpiresAt(exp, false)
+			if !verifiedExpiration {
+				return nil, fmt.Errorf("unable to verify 'exp' claim")
 			}
 		}
 
