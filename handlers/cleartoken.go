@@ -39,5 +39,5 @@ func (handler *ClearToken) ServeHTTP(resp http.ResponseWriter, req *http.Request
 	}
 
 	resp.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(resp).Encode("token was successfully deleted")
+	_ = json.NewEncoder(resp).Encode("pair of tokens were successfully cleared")
 }
