@@ -15,7 +15,6 @@ const defaultExpirationTimeMinutes = 1
 const defaultRedisPort = "6379"
 const defaultSecret = "secret"
 const defaultServerName = "localhost"
-const defaultServerPort = "8080"
 
 type Config struct {
 	SecretKey string
@@ -106,10 +105,5 @@ func GetServerAddr() string {
 		_ = os.Setenv("HOST", defaultServerName)
 	}
 
-	port := os.Getenv("PORT")
-	if os.Getenv("PORT") == "" {
-		port = defaultServerPort
-	}
-
-	return fmt.Sprintf("%s:%s", os.Getenv("HOST"), port)
+	return fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
 }
