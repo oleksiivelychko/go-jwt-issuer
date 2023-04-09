@@ -1,26 +1,26 @@
-### Generate a new tokens pair for user with identifier 1.
-GET http://127.0.0.1:8080/access-token?userId=1
+### Generate a new pair of tokens for user with ID 1.
+GET http://127.0.0.1:8080/access-token?userID=1
 
 > {%
-    client.global.set("access_token", response.body.access_token);
-    client.global.set("refresh_token", response.body.refresh_token);
-    client.global.set("expiration_time", response.body.expiration_time);
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+    client.global.set("expirationTime", response.body.expirationTime);
 %}
 
-### Re-generate the tokens pair for user by `refresh_token` from above request.
+### Re-generate the pair of tokens for user by 'refreshToken' from above request.
 POST http://127.0.0.1:8080/refresh-token
 Accept: application/json
-Authorization: {{refresh_token}}
-Expires: {{expiration_time}}
+Authorization: {{refreshToken}}
+Expires: {{expirationTime}}
 
 > {%
-    client.global.set("access_token", response.body.access_token);
-    client.global.set("refresh_token", response.body.refresh_token);
-    client.global.set("expiration_time", response.body.expiration_time);
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+    client.global.set("expirationTime", response.body.expirationTime);
 %}
 
-### Remove the tokens pair for user by `access_token` from above request.
+### Remove the pair of tokens for user by 'accessToken' from above request.
 POST http://127.0.0.1:8080/clear-token
 Accept: application/json
-Authorization: {{access_token}}
-Expires: {{expiration_time}}
+Authorization: {{accessToken}}
+Expires: {{expirationTime}}
