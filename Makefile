@@ -5,15 +5,6 @@ docker-build:
 docker-run-redis:
 	docker run --rm --name redis-server -p 6379:6379 redis --requirepass "secret"
 
-go-edit:
-	# go clean --modcache
-	go mod edit -go=1.20
-	go mod edit -module github.com/oleksiivelychko/go-jwt-issuer
-	go get -u ./... && go mod tidy
-
-go-test:
-	go clean -testcache && go test ./*/
-
 kube-apply-all:
 	kubectl apply -f .kubernetes
 
@@ -31,14 +22,17 @@ kube-redis-cli-get:
 kube-redis-cli-del:
 	kubectl -n gons exec -it redis -- redis-cli --pass secret --no-auth-warning del token-$(id)
 
-# make secret-redis [password]
-secret-redis:
+# make redis-secret [password]
+redis-secret:
 	@/bin/echo -n '$(password)' > .kubernetes/secrets/password.txt
 	kubectl create secret generic redis --from-file=password=.kubernetes/secrets/password.txt -n gons
 
-secret-redis-del:
+redis-secret-del:
 	kubectl delete secret redis -n gons
 
-secret-redis-get:
+redis-secret-get:
 	kubectl get secrets/redis -o yaml -n gons
 	kubectl get secret redis -o jsonpath='{.data.password}' -n gons | base64 --decode
+
+run:
+	HOST=localhost PORT=8080 go run main.go
