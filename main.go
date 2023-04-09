@@ -21,7 +21,7 @@ func main() {
 	if cmd.Err() != nil {
 		log.Fatal(cmd.Err())
 	} else {
-		log.Printf("successful redis connection: %s", tokenService.RedisClient)
+		log.Printf("established connection: %s", tokenService.RedisClient)
 	}
 
 	muxRouter := mux.NewRouter()
