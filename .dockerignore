@@ -2,6 +2,7 @@
 .kubernetes
 .run
 .gitignore
+dlv.dockerfile
 LICENSE
 Makefile
 README.md
