@@ -18,7 +18,6 @@ type ResponseJWT struct {
 	RefreshToken   string `json:"refreshToken,omitempty"`
 	ExpirationTime string `json:"expirationTime,omitempty"`
 	ErrorMessage   string `json:"errorMessage,omitempty"`
-	ErrorCode      uint8  `json:"errorCode,omitempty"`
 }
 
 func IssueJWT(secretKey, aud, iss string, expMinutes, userID uint) (
