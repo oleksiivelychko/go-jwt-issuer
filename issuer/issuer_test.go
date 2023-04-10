@@ -1,18 +1,12 @@
 package issuer
 
 import (
-	"github.com/oleksiivelychko/go-jwt-issuer/config"
 	"testing"
 	"time"
 )
 
 func TestIssuer_ValidateIssuedToken(t *testing.T) {
-	var secretKey = config.GetSecretKey()
-	var aud = config.GetAudience()
-	var iss = config.GetIssuer()
-	var expiresMinutes = config.GetExpirationTimeMinutes()
-
-	token, _, exp, err := IssueJWT(secretKey, aud, iss, expiresMinutes, 1)
+	token, _, _, err := IssueJWT("secretkey", "jwt.account.local", "jwt.local", 1, 1)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -20,20 +14,25 @@ func TestIssuer_ValidateIssuedToken(t *testing.T) {
 	// to validate expiration time
 	time.Sleep(1 * time.Second)
 
-	claimsJWT, err := ParseToken(token, secretKey, aud, iss, exp)
+	claimsJWT, err := ParseToken(token, "secretkey", "jwt.account.local", "jwt.local", 1)
 	if _, ok := claimsJWT.Claims.(*ClaimsJWT); !ok || !claimsJWT.Valid {
 		t.Fatal(err.Error())
 	}
 }
 
-func BenchmarkIssuer_ValidateIssuedToken(b *testing.B) {
-	var secretKey = config.GetSecretKey()
-	var aud = config.GetAudience()
-	var iss = config.GetIssuer()
-	var expiresMinutes = config.GetExpirationTimeMinutes()
-
-	for i := 0; i < b.N; i++ {
-		token, _, exp, _ := IssueJWT(secretKey, aud, iss, expiresMinutes, 1)
-		_, _ = ParseToken(token, secretKey, aud, iss, exp)
+func TestIssuer_ValidateExpiredToken(t *testing.T) {
+	token, _, _, err := IssueJWT("secretkey", "jwt.account.local", "jwt.local", 0, 1)
+	if err != nil {
+		t.Fatal(err.Error())
 	}
+
+	// to validate expiration time
+	time.Sleep(1 * time.Second)
+
+	_, err = ParseToken(token, "secretkey", "jwt.local", "jwt.local", 0)
+	if err == nil {
+		t.Error("unable to validate expired token")
+	}
+
+	t.Log(err)
 }
