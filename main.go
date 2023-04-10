@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/oleksiivelychko/go-jwt-issuer/config"
 	"github.com/oleksiivelychko/go-jwt-issuer/handlers"
@@ -15,7 +16,17 @@ import (
 )
 
 func main() {
-	tokenService := token.NewService(config.NewConfig(), config.InitRedis())
+	tokenService := token.NewService(
+		config.NewConfig(
+			os.Getenv("SECRET_KEY"),
+			os.Getenv("AUDIENCE_AUD"),
+			os.Getenv("ISSUER_ISS"),
+			os.Getenv("EXPIRATION_TIME_EXP"),
+		), config.NewRedisClient(
+			os.Getenv("REDIS_HOST"),
+			os.Getenv("REDIS_PORT"),
+			os.Getenv("REDIS_PASSWORD"),
+		))
 
 	cmd := tokenService.RedisClient.Ping(context.Background())
 	if cmd.Err() != nil {
@@ -40,7 +51,7 @@ func main() {
 	postRouter.HandleFunc("/clear-token", clearTokenHandler.ServeHTTP)
 	postRouter.HandleFunc("/authorize-token", authorizeTokenHandler.ServeHTTP)
 
-	addr := config.GetServerAddr()
+	addr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
 	server := &http.Server{
 		Addr:         addr,
 		Handler:      muxRouter,
