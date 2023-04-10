@@ -31,8 +31,19 @@ spec:
           env:
             - name: HOST
               value: ""
+            - name: PORT
+              value: "8080"
             - name: REDIS_HOST
               value: "redis"
             - name: REDIS_PORT
               value: "6379"
-
+            - name: REDIS_PASSWORD
+              value: "secret"
+            - name: SECRET_KEY
+              value: "secretkey"
+            - name: AUDIENCE_AUD
+              value: "jwt.account.local"
+            - name: ISSUER_ISS
+              value: "jwt.local"
+            - name: EXPIRATION_TIME_EXP
+              value: "10"
