@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"context"
-	"github.com/oleksiivelychko/go-jwt-issuer/config"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -12,9 +12,9 @@ type ContextClaimsJWT struct{}
 
 func JWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
-		var secretKey = config.GetSecretKey()
-		var audienceAUD = config.GetAudience()
-		var issuerISS = config.GetIssuer()
+		var secretKey = os.Getenv("SECRET_KEY")
+		var audienceAUD = os.Getenv("AUDIENCE_AUD")
+		var issuerISS = os.Getenv("ISSUER_ISS")
 
 		tokenHeader := request.Header.Get("Authorization")
 		expiresIn, err := strconv.ParseInt(request.Header.Get("Expires"), 10, 64)
