@@ -1,0 +1,27 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go build github.com/oleksiivelychko/go-jwt-issuer" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+    <module name="go-jwt-issuer" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="AUDIENCE_AUD" value="jwt.account.local" />
+      <env name="EXPIRATION_TIME_EXP" value="10" />
+      <env name="HOST" value="localhost" />
+      <env name="ISSUER_ISS" value="jwt.local" />
+      <env name="PORT" value="8080" />
+      <env name="REDIS_HOST" value="localhost" />
+      <env name="REDIS_PASSWORD" value="secret" />
+      <env name="REDIS_PORT" value="6379" />
+      <env name="SECRET_KEY" value="secretkey" />
+    </envs>
+    <EXTENSION ID="software.aws.toolkits.jetbrains.core.execution.GoAwsConnectionRunConfigurationExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </EXTENSION>
+    <kind value="PACKAGE" />
+    <package value="github.com/oleksiivelychko/go-jwt-issuer" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/main.go" />
+    <method v="2" />
+  </configuration>
+</component>
