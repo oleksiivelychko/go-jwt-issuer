@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func TestConfig_InitRedis(t *testing.T) {
-	redisClient := InitRedis()
+func TestConfig_RedisClient(t *testing.T) {
+	redisClient := NewRedisClient("localhost", "6379", "secret")
 	var ctx = context.Background()
 
 	err := redisClient.Set(ctx, "key", "value", 0).Err()
