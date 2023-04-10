@@ -1,28 +1,24 @@
 package middleware
 
 import (
-	"github.com/oleksiivelychko/go-jwt-issuer/config"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
 )
 
 func TestMiddleware_ValidateJWT(t *testing.T) {
-	var secretKey = config.GetSecretKey()
-	var aud = config.GetAudience()
-	var iss = config.GetIssuer()
-	var expiresMinutes = config.GetExpirationTimeMinutes()
-
-	token, _, exp, _ := issuer.IssueJWT(secretKey, aud, iss, expiresMinutes, 1)
+	_ = os.Setenv("SECRET_KEY", "secretkey")
+	token, _, expMinutes, _ := issuer.IssueJWT("secretkey", "", "", 0, 1)
 
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("Authorization", token)
-	req.Header.Set("Expires", strconv.FormatInt(exp, 10))
+	req.Header.Set("Expires", strconv.FormatInt(expMinutes, 10))
 
 	resp := httptest.NewRecorder()
 
@@ -31,10 +27,10 @@ func TestMiddleware_ValidateJWT(t *testing.T) {
 
 	respMessage := string(resp.Body.Bytes())
 
-	if respMessage == "environment variable 'SECRET_KEY' is not defined" {
+	if respMessage == "environment variable 'SECRET_KEY' is not defined\n" {
 		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
-	if respMessage == "unable to get token from 'Authorization' header" {
+	if respMessage == "unable to get token from 'Authorization' header\n" {
 		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
 	if strings.HasPrefix(respMessage, "unexpected signing method") {
@@ -49,4 +45,6 @@ func TestMiddleware_ValidateJWT(t *testing.T) {
 	if respMessage == "unable to verify 'exp' claim" {
 		t.Errorf("response code: %d, message: %s", resp.Code, respMessage)
 	}
+
+	_ = os.Unsetenv("SECRET_KEY")
 }
