@@ -67,7 +67,7 @@ func ParseToken(token, secretKey, aud, iss string, exp int64) (*jwt.Token, error
 			}
 		}
 
-		if exp > 0 {
+		if exp != 0 {
 			verifiedExpiration := token.Claims.(*ClaimsJWT).VerifyExpiresAt(exp, false)
 			if !verifiedExpiration {
 				return nil, fmt.Errorf("unable to verify 'exp' claim")
