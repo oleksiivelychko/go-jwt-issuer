@@ -7,8 +7,8 @@ import (
 
 func TestService_GeneratePairTokens(t *testing.T) {
 	tokenService := Service{
-		Config:      config.NewConfig(),
-		RedisClient: config.InitRedis(),
+		Config:      config.NewConfig("secretkey", "jwt.account.local", "jwt.local", "1"),
+		RedisClient: config.NewRedisClient("localhost", "6379", "secret"),
 	}
 
 	accessToken, refreshToken, exp, err := tokenService.GeneratePairTokens(1)
