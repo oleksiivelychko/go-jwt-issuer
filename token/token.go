@@ -52,7 +52,7 @@ func (service *Service) GeneratePairTokens(userID uint) (
 	cmd := service.RedisClient.Set(
 		context.Background(),
 		fmt.Sprintf("token-%d", userID), string(cachedJSON),
-		service.Config.GetAutoLogOffDuration(),
+		service.Config.GetAutoLogOutMinutes(),
 	)
 
 	if cmd.Err() != nil {
@@ -94,7 +94,7 @@ func (service *Service) ValidateCachedToken(claims *issuer.ClaimsJWT, isRefresh 
 		return errors.New("unable to validate cached token")
 	}
 
-	cmd := service.RedisClient.Expire(ctx, fmt.Sprintf("token-%d", claims.ID), service.Config.GetAutoLogOffDuration())
+	cmd := service.RedisClient.Expire(ctx, fmt.Sprintf("token-%d", claims.ID), service.Config.GetAutoLogOutMinutes())
 	if cmd.Err() != nil {
 		return cmd.Err()
 	}
