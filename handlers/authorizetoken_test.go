@@ -14,8 +14,8 @@ import (
 
 func TestHandler_AuthorizeToken(t *testing.T) {
 	tokenService := token.Service{
-		Config:      config.NewConfig(),
-		RedisClient: config.InitRedis(),
+		Config:      config.NewConfig("secretkey", "jwt.account.local", "jwt.local", "1"),
+		RedisClient: config.NewRedisClient("localhost", "6379", "secret"),
 	}
 
 	req, _ := http.NewRequest("GET", "/access-token?userID=1", nil)
