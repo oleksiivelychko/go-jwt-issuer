@@ -8,13 +8,7 @@ import (
 	"time"
 )
 
-const autoLogOffMinutes = 10
-const defaultIssuerISS = "jwt.local"
-const defaultAudienceAUD = "account." + defaultIssuerISS
-const defaultExpirationTimeMinutes = 1
-const defaultRedisPort = "6379"
-const defaultSecret = "secret"
-const defaultServerName = "localhost"
+const defaultAutoLogOutMinutes = time.Minute * 10
 
 type Config struct {
 	SecretKey string
@@ -23,34 +17,34 @@ type Config struct {
 	EXP       uint
 }
 
-func NewConfig() *Config {
+func NewConfig(secretKey, aud, iss, exp string) *Config {
+	if _, isOk := os.LookupEnv("SECRET_KEY"); !isOk {
+		_ = os.Setenv("SECRET_KEY", secretKey)
+	}
+	if _, isOk := os.LookupEnv("ISSUER_ISS"); !isOk {
+		_ = os.Setenv("ISSUER_ISS", iss)
+	}
+	if _, isOk := os.LookupEnv("AUDIENCE_AUD"); !isOk {
+		_ = os.Setenv("AUDIENCE_AUD", aud)
+	}
+	if _, isOk := os.LookupEnv("EXPIRATION_TIME_EXP"); !isOk {
+		_ = os.Setenv("EXPIRATION_TIME_EXP", exp)
+	}
+
 	return &Config{
-		SecretKey: GetSecretKey(),
-		ISS:       GetIssuer(),
-		AUD:       GetAudience(),
-		EXP:       GetExpirationTimeMinutes(),
+		SecretKey: secretKey,
+		ISS:       iss,
+		AUD:       aud,
+		EXP:       ParseExpirationTime(exp),
 	}
 }
 
-func (config *Config) GetAutoLogOffDuration() time.Duration {
-	return time.Minute * autoLogOffMinutes
+func (config *Config) GetAutoLogOutMinutes() time.Duration {
+	return defaultAutoLogOutMinutes
 }
 
-func InitRedis() *redis.Client {
-	redisHost := os.Getenv("REDIS_HOST")
-	if redisHost == "" {
-		redisHost = defaultServerName
-	}
-	redisPort := os.Getenv("REDIS_PORT")
-	if redisPort == "" {
-		redisPort = defaultRedisPort
-	}
-	redisPassword := os.Getenv("REDIS_PASSWORD")
-	if redisPassword == "" {
-		redisPassword = defaultSecret
-	}
-
-	redisURL := fmt.Sprintf("redis://:%s@%s:%s", redisPassword, redisHost, redisPort)
+func NewRedisClient(host, port, password string) *redis.Client {
+	redisURL := fmt.Sprintf("redis://:%s@%s:%s", password, host, port)
 	options, err := redis.ParseURL(redisURL)
 	if err != nil {
 		panic(err)
@@ -59,51 +53,11 @@ func InitRedis() *redis.Client {
 	return redis.NewClient(options)
 }
 
-func GetSecretKey() string {
-	secretKey := os.Getenv("SECRET_KEY")
-	if secretKey == "" {
-		secretKey = defaultSecret
+func ParseExpirationTime(exp string) uint {
+	parseUint, err := strconv.ParseUint(exp, 10, 32)
+	if err != nil {
+		panic(err)
 	}
 
-	return secretKey
-}
-
-func GetAudience() string {
-	audienceAUD := os.Getenv("AUDIENCE_AUD")
-	if audienceAUD == "" {
-		audienceAUD = defaultAudienceAUD
-	}
-
-	return audienceAUD
-}
-
-func GetIssuer() string {
-	issuerISS := os.Getenv("ISSUER_ISS")
-	if issuerISS == "" {
-		issuerISS = defaultIssuerISS
-	}
-
-	return issuerISS
-}
-
-func GetExpirationTimeMinutes() uint {
-	exp := os.Getenv("EXPIRATION_TIME_EXP")
-	if exp != "" {
-		minutes, err := strconv.ParseUint(exp, 10, 32)
-		if err == nil {
-			return uint(minutes)
-		}
-	}
-
-	return defaultExpirationTimeMinutes
-}
-
-func GetServerAddr() string {
-	if host, isOk := os.LookupEnv("HOST"); isOk == true {
-		_ = os.Setenv("HOST", host)
-	} else {
-		_ = os.Setenv("HOST", defaultServerName)
-	}
-
-	return fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
+	return uint(parseUint)
 }
