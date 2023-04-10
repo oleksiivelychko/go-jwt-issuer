@@ -51,7 +51,7 @@ func TestHandler_RefreshToken(t *testing.T) {
 	middlewareHandler := middleware.JWT(refreshTokenHandler)
 	middlewareHandler.ServeHTTP(resp, req)
 
-	if resp.Code != 200 {
+	if resp.Code != http.StatusOK {
 		t.Fatalf("non-expected status code: %d\nbody: %v", resp.Code, resp.Body)
 	}
 
@@ -116,7 +116,7 @@ func TestHandler_AuthorizeByExpiredToken(t *testing.T) {
 	middlewareHandler := middleware.JWT(authorizeTokenHandler)
 	middlewareHandler.ServeHTTP(resp, req)
 
-	if resp.Code != 200 {
+	if resp.Code != http.StatusOK {
 		t.Fatalf("non-expected status code: %d\nbody: %v", resp.Code, resp.Body)
 	}
 
@@ -134,7 +134,7 @@ func TestHandler_AuthorizeByExpiredToken(t *testing.T) {
 	middlewareHandler = middleware.JWT(refreshTokenHandler)
 	middlewareHandler.ServeHTTP(resp, req)
 
-	if resp.Code != 401 {
+	if resp.Code != http.StatusUnauthorized {
 		t.Fatalf("non-expected status code: %d\nbody: %v", resp.Code, resp.Body)
 	}
 
