@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"github.com/oleksiivelychko/go-jwt-issuer/token"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -18,6 +19,7 @@ func NewAccessToken(tokenService *token.Service) *AccessToken {
 }
 
 func (handler *AccessToken) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	log.Print("handler AccessToken is served")
 	resp.Header().Set("Content-Type", "application/json")
 
 	queryValues := req.URL.Query()

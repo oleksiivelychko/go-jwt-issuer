@@ -5,6 +5,7 @@ import (
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
 	"github.com/oleksiivelychko/go-jwt-issuer/token"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -18,6 +19,7 @@ func NewRefreshToken(tokenService *token.Service) *RefreshToken {
 }
 
 func (handler *RefreshToken) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	log.Print("handler RefreshToken is served")
 	resp.Header().Set("Content-Type", "application/json")
 
 	claims := req.Context().Value(middleware.ContextClaimsJWT{}).(*issuer.ClaimsJWT)

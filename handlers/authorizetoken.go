@@ -5,6 +5,7 @@ import (
 	"github.com/oleksiivelychko/go-jwt-issuer/issuer"
 	"github.com/oleksiivelychko/go-jwt-issuer/middleware"
 	"github.com/oleksiivelychko/go-jwt-issuer/token"
+	"log"
 	"net/http"
 )
 
@@ -17,6 +18,7 @@ func NewAuthorizeToken(tokenService *token.Service) *AuthorizeToken {
 }
 
 func (handler *AuthorizeToken) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	log.Print("handler AuthorizeToken is served")
 	claims := req.Context().Value(middleware.ContextClaimsJWT{}).(*issuer.ClaimsJWT)
 
 	err := handler.tokenService.ValidateCachedToken(claims, false)

@@ -19,6 +19,7 @@ func NewClearToken(tokenService *token.Service) *ClearToken {
 }
 
 func (handler *ClearToken) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	log.Print("handler ClearToken is served")
 	resp.Header().Set("Content-Type", "application/json")
 
 	claims := req.Context().Value(middleware.ContextClaimsJWT{}).(*issuer.ClaimsJWT)
