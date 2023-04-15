@@ -54,10 +54,10 @@ func NewRedisClient(host, port, password string) *redis.Client {
 }
 
 func ParseExpirationTime(exp string) uint {
-	parseUint, err := strconv.ParseUint(exp, 10, 32)
+	parsedUint, err := strconv.ParseUint(exp, 10, 32)
 	if err != nil {
 		panic(err)
 	}
 
-	return uint(parseUint)
+	return uint(parsedUint)
 }
